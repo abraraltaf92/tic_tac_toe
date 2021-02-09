@@ -2,11 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tic_tac_toe/board_tile.dart';
 import 'package:tic_tac_toe/tile_state.dart';
 
 void main() {
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  runApp(new MyApp());
 }
 
 class MyApp extends StatefulWidget {
