@@ -246,10 +246,13 @@ class _MyAppState extends State<MyApp> {
       _currentState = TileState.CROSS;
       countDraw = 0;
     });
-    _displaySnack(notification: 'restarted');
+    _displaySnack();
   }
 
-  void _displaySnack({String notification}) {
-    Fluttertoast.showToast(msg: 'Game $notification');
+  void _displaySnack() {
+    Fluttertoast.showToast(
+      msg: 'NewGame Started',
+      gravity: ToastGravity.BOTTOM,
+    );
   }
 }
