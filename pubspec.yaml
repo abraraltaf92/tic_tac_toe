@@ -24,9 +24,15 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.1
+  flutter_launcher_icons: ^0.8.1
   fluttertoast: ^7.1.6
   provider: ^4.3.3
   shared_preferences: ^0.5.12+4
+
+flutter_icons:
+  android: false
+  ios: true
+  image_path: "images/logo.png"
 
 dev_dependencies:
   flutter_test:

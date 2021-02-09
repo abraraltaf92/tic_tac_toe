@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.tic_tac_toe">
    <application
-        android:label="tic_tac_toe"
-        android:icon="@mipmap/ic_launcher">
+        android:label="Tic Tac Toe"
+        android:icon="@mipmap/logo">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

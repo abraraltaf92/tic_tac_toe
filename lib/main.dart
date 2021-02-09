@@ -45,16 +45,18 @@ class _MyAppState extends State<MyApp> {
             title: Text('Tic Tac Toe'),
             actions: [
               IconButton(
-                  onPressed: () {
-                    ThemeProvider themeProvider =
-                        Provider.of<ThemeProvider>(context, listen: false);
-                    themeProvider.swapTheme();
-                    setState(() {
-                      isDark = !isDark;
-                    });
-                  },
-                  icon:
-                      Icon(!isDark ? Icons.lightbulb : Icons.lightbulb_outline))
+                onPressed: () {
+                  ThemeProvider themeProvider =
+                      Provider.of<ThemeProvider>(context, listen: false);
+                  themeProvider.swapTheme();
+                  setState(() {
+                    isDark = !isDark;
+                  });
+                },
+                icon:
+                    Icon(!isDark ? (Icons.lightbulb) : Icons.lightbulb_outline),
+                color: !isDark ? Colors.yellow : null,
+              )
             ],
           ),
           body: SafeArea(
@@ -71,11 +73,13 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
           floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.white54,
-            foregroundColor: Colors.black,
-            child: Icon(Icons.replay_outlined),
-            onPressed: _resetGame,
-          ),
+              backgroundColor: Colors.white54,
+              foregroundColor: Colors.black,
+              child: Icon(Icons.replay_outlined),
+              onPressed: () {
+                _resetGame();
+                _displaySnack(msg: 'Game Restarted');
+              }),
         ),
       );
     });
@@ -176,6 +180,8 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () {
                       _resetGame();
                       Navigator.of(newContext).pop();
+                      _displaySnack(
+                          msg: 'NewGame Started', gravity: ToastGravity.CENTER);
                     },
                     child: Text('New Game'))
               ],
@@ -191,6 +197,8 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () {
                       _resetGame();
                       Navigator.of(newContext).pop();
+                      _displaySnack(
+                          msg: 'NewGame Started', gravity: ToastGravity.CENTER);
                     },
                     child: Text('New Game'))
               ],
@@ -216,6 +224,8 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () {
                       _resetGame();
                       Navigator.of(newContext).pop();
+                      _displaySnack(
+                          msg: 'NewGame Started', gravity: ToastGravity.CENTER);
                     },
                     child: Text('New Game'))
               ],
@@ -232,6 +242,8 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () {
                       _resetGame();
                       Navigator.of(newContext).pop();
+                      _displaySnack(
+                          msg: 'NewGame Started', gravity: ToastGravity.CENTER);
                     },
                     child: Text('New Game'))
               ],
@@ -246,13 +258,12 @@ class _MyAppState extends State<MyApp> {
       _currentState = TileState.CROSS;
       countDraw = 0;
     });
-    _displaySnack();
   }
 
-  void _displaySnack() {
+  void _displaySnack({@required String msg, ToastGravity gravity}) {
     Fluttertoast.showToast(
-      msg: 'NewGame Started',
-      gravity: ToastGravity.BOTTOM,
+      msg: msg,
+      gravity: gravity,
     );
   }
 }
