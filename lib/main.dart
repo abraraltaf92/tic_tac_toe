@@ -3,13 +3,22 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tic_tac_toe/board_tile.dart';
+import 'package:tic_tac_toe/theme.dart';
 import 'package:tic_tac_toe/tile_state.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  runApp(new MyApp());
+  runApp(ChangeNotifierProvider(
+    child: new MyApp(),
+    create: (BuildContext context) =>
+        ThemeProvider(isDarkMode: prefs.getBool('isDarkTheme') ?? true),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -22,38 +31,54 @@ class _MyAppState extends State<MyApp> {
   var _boardState = List<TileState>.filled(9, TileState.EMPTY);
   var _currentState = TileState.CROSS; //since Cross goes the first
   int countDraw = 0;
+  bool isDark = true;
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorkey,
-      title: 'Tic Tac Toe',
-      theme: ThemeData.dark(),
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Tic Tac Toe'),
-        ),
-        body: SafeArea(
-          child: Center(
-            child: Stack(
-              children: <Widget>[
-                Image.asset(
-                  'images/board.png',
-                  color: Colors.white54,
-                ),
-                _boardTiles(),
-              ],
+    return Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
+      return MaterialApp(
+        navigatorKey: navigatorkey,
+        title: 'Tic Tac Toe',
+        theme: themeProvider.getTheme,
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          appBar: AppBar(
+            title: Text('Tic Tac Toe'),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    ThemeProvider themeProvider =
+                        Provider.of<ThemeProvider>(context, listen: false);
+                    themeProvider.swapTheme();
+                    setState(() {
+                      isDark = !isDark;
+                    });
+                  },
+                  icon:
+                      Icon(!isDark ? Icons.lightbulb : Icons.lightbulb_outline))
+            ],
+          ),
+          body: SafeArea(
+            child: Center(
+              child: Stack(
+                children: <Widget>[
+                  Image.asset(
+                    'images/board.png',
+                    color: isDark ? Colors.white54 : Colors.black,
+                  ),
+                  _boardTiles(),
+                ],
+              ),
             ),
           ),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.white54,
+            foregroundColor: Colors.black,
+            child: Icon(Icons.replay_outlined),
+            onPressed: _resetGame,
+          ),
         ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.white54,
-          foregroundColor: Colors.black,
-          child: Icon(Icons.replay_outlined),
-          onPressed: _resetGame,
-        ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _boardTiles() {
@@ -182,7 +207,10 @@ class _MyAppState extends State<MyApp> {
           if (Platform.isIOS) {
             return CupertinoAlertDialog(
               title: Text("RESULT"),
-              content: Image.asset('images/tie.png'),
+              content: Image.asset(
+                'images/tie.png',
+                color: isDark ? null : Colors.black,
+              ),
               actions: [
                 FlatButton(
                     onPressed: () {
@@ -195,7 +223,10 @@ class _MyAppState extends State<MyApp> {
           } else {
             return AlertDialog(
               title: Text("RESULT"),
-              content: Image.asset('images/tie.png'),
+              content: Image.asset(
+                'images/tie.png',
+                color: isDark ? null : Colors.black,
+              ),
               actions: [
                 FlatButton(
                     onPressed: () {
@@ -215,5 +246,10 @@ class _MyAppState extends State<MyApp> {
       _currentState = TileState.CROSS;
       countDraw = 0;
     });
+    _displaySnack(notification: 'restarted');
+  }
+
+  void _displaySnack({String notification}) {
+    Fluttertoast.showToast(msg: 'Game $notification');
   }
 }
