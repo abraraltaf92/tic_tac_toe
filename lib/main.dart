@@ -18,6 +18,7 @@ class _MyAppState extends State<MyApp> {
   final navigatorkey = GlobalKey<NavigatorState>();
   var _boardState = List<TileState>.filled(9, TileState.EMPTY);
   var _currentState = TileState.CROSS; //since Cross goes the first
+  int countDraw = 0;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -41,6 +42,12 @@ class _MyAppState extends State<MyApp> {
               ],
             ),
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.white54,
+          foregroundColor: Colors.black,
+          child: Icon(Icons.replay_outlined),
+          onPressed: _resetGame,
         ),
       ),
     );
@@ -87,6 +94,11 @@ class _MyAppState extends State<MyApp> {
       final winner = _findWinner();
       if (winner != null) {
         _showWinnerDialog(winner);
+      } else {
+        countDraw += 1;
+        if (countDraw == 9) {
+          _showDrawDialog();
+        }
       }
     }
   }
@@ -116,6 +128,7 @@ class _MyAppState extends State<MyApp> {
 
     winner = checks.firstWhere((TileState element) => element != null,
         orElse: () => null);
+
     return winner;
   }
 
@@ -158,10 +171,46 @@ class _MyAppState extends State<MyApp> {
         });
   }
 
+  void _showDrawDialog() {
+    final newContext = navigatorkey.currentState.overlay.context;
+    showDialog(
+        context: newContext,
+        builder: (_) {
+          if (Platform.isIOS) {
+            return CupertinoAlertDialog(
+              title: Text("RESULT"),
+              content: Image.asset('images/tie.png'),
+              actions: [
+                FlatButton(
+                    onPressed: () {
+                      _resetGame();
+                      Navigator.of(newContext).pop();
+                    },
+                    child: Text('New Game'))
+              ],
+            );
+          } else {
+            return AlertDialog(
+              title: Text("RESULT"),
+              content: Image.asset('images/tie.png'),
+              actions: [
+                FlatButton(
+                    onPressed: () {
+                      _resetGame();
+                      Navigator.of(newContext).pop();
+                    },
+                    child: Text('New Game'))
+              ],
+            );
+          }
+        });
+  }
+
   void _resetGame() {
     setState(() {
       _boardState = List.filled(9, TileState.EMPTY);
       _currentState = TileState.CROSS;
+      countDraw = 0;
     });
   }
 }
