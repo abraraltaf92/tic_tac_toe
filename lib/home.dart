@@ -1,104 +1,73 @@
 import 'dart:io';
 
-import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tic_tac_toe/board_tile.dart';
-import 'package:tic_tac_toe/home.dart';
 import 'package:tic_tac_toe/theme.dart';
 import 'package:tic_tac_toe/tile_state.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  runApp(ChangeNotifierProvider(
-    child: new MyApp(),
-    create: (BuildContext context) =>
-        ThemeProvider(isDarkMode: prefs.getBool('isDarkTheme') ?? true),
-  ));
-}
-
-class MyApp extends StatefulWidget {
+class Home extends StatefulWidget {
+  final bool isDarkMode;
+  Home({this.isDarkMode});
   @override
-  _MyAppState createState() => _MyAppState();
+  _HomeState createState() => _HomeState();
 }
 
-class _MyAppState extends State<MyApp> {
-  final navigatorkey = GlobalKey<NavigatorState>();
+class _HomeState extends State<Home> {
   var _boardState = List<TileState>.filled(9, TileState.EMPTY);
   var _currentState = TileState.CROSS; //since Cross goes the first
   int countDraw = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   bool isDark = true;
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
-      return GetMaterialApp(
-        navigatorKey: navigatorkey,
-        title: 'Tic Tac Toe',
-        theme: themeProvider.getTheme,
-        debugShowCheckedModeBanner: false,
-        home: AnimatedSplashScreen(
-          backgroundColor: themeProvider.getTheme.backgroundColor,
-          nextScreen: Home(
-            isDarkMode: Theme.of(context).brightness == Brightness.dark,
-          ),
-          splash:
-              Lottie.asset('images/splashScreen.json', height: 200, width: 200),
-          duration: 2,
+      bool isDark = themeProvider.getTheme == ThemeData.dark();
+      return Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text('Tic Tac Toe'),
+          actions: [
+            IconButton(
+              onPressed: () {
+                ThemeProvider themeProvider =
+                    Provider.of<ThemeProvider>(context, listen: false);
+                themeProvider.swapTheme();
+
+                setState(() {
+                  isDark = !isDark;
+                });
+              },
+              icon: Icon(isDark ? (Icons.lightbulb) : Icons.lightbulb_outline),
+              color: isDark ? Colors.yellow : null,
+            ),
+          ],
         ),
-        // home: Scaffold(
-        //   appBar: AppBar(
-        //     title: Text('Tic Tac Toe'),
-        //     actions: [
-        //       IconButton(
-        //         onPressed: () {
-        //           ThemeProvider themeProvider =
-        //               Provider.of<ThemeProvider>(context, listen: false);
-        //           themeProvider.swapTheme();
-        //           setState(() {
-        //             isDark = !isDark;
-        //           });
-        //         },
-        //         icon:
-        //             Icon(!isDark ? (Icons.lightbulb) : Icons.lightbulb_outline),
-        //         color: !isDark ? Colors.yellow : null,
-        //       ),
-        //       FlatButton(
-        //           onPressed: () {
-        //             Get.to(Home());
-        //           },
-        //           child: Text('j'))
-        //     ],
-        //   ),
-        //   body: SafeArea(
-        //     child: Center(
-        //       child: Stack(
-        //         children: <Widget>[
-        //           Image.asset(
-        //             'images/board.png',
-        //             color: isDark ? Colors.white54 : Colors.black,
-        //           ),
-        //           _boardTiles(),
-        //         ],
-        //       ),
-        //     ),
-        //   ),
-        //   floatingActionButton: FloatingActionButton(
-        //       backgroundColor: Colors.white54,
-        //       foregroundColor: Colors.black,
-        //       child: Icon(Icons.replay_outlined),
-        //       onPressed: () {
-        //         _resetGame();
-        //         _displaySnack(msg: 'Game Restarted');
-        //       }),
-        // ),
+        body: SafeArea(
+          child: Center(
+            child: Stack(
+              children: <Widget>[
+                Image.asset(
+                  'images/board.png',
+                  color: isDark ? Colors.white54 : Colors.black,
+                ),
+                _boardTiles(),
+              ],
+            ),
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.white54,
+            foregroundColor: Colors.black,
+            child: Icon(Icons.replay_outlined),
+            onPressed: () {
+              _resetGame();
+              _displaySnack(msg: 'Game Restarted');
+            }),
       );
     });
   }
@@ -183,9 +152,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _showWinnerDialog(TileState tileState) {
-    final newContext = navigatorkey.currentState.overlay.context;
     showDialog(
-        context: newContext,
+        context: context,
         builder: (_) {
           if (Platform.isIOS) {
             return CupertinoAlertDialog(
@@ -197,7 +165,7 @@ class _MyAppState extends State<MyApp> {
                 FlatButton(
                     onPressed: () {
                       _resetGame();
-                      Navigator.of(newContext).pop();
+                      Navigator.of(context).pop();
                       _displaySnack(
                           msg: 'NewGame Started', gravity: ToastGravity.CENTER);
                     },
@@ -214,7 +182,7 @@ class _MyAppState extends State<MyApp> {
                 FlatButton(
                     onPressed: () {
                       _resetGame();
-                      Navigator.of(newContext).pop();
+                      Navigator.of(context).pop();
                       _displaySnack(
                           msg: 'NewGame Started', gravity: ToastGravity.CENTER);
                     },
@@ -226,9 +194,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _showDrawDialog() {
-    final newContext = navigatorkey.currentState.overlay.context;
     showDialog(
-        context: newContext,
+        context: context,
         builder: (_) {
           if (Platform.isIOS) {
             return CupertinoAlertDialog(
@@ -241,7 +208,7 @@ class _MyAppState extends State<MyApp> {
                 FlatButton(
                     onPressed: () {
                       _resetGame();
-                      Navigator.of(newContext).pop();
+                      Navigator.of(context).pop();
                       _displaySnack(
                           msg: 'NewGame Started', gravity: ToastGravity.CENTER);
                     },
@@ -259,7 +226,7 @@ class _MyAppState extends State<MyApp> {
                 FlatButton(
                     onPressed: () {
                       _resetGame();
-                      Navigator.of(newContext).pop();
+                      Navigator.of(context).pop();
                       _displaySnack(
                           msg: 'NewGame Started', gravity: ToastGravity.CENTER);
                     },
