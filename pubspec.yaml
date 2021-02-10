@@ -24,6 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   animated_splash_screen: ^1.0.1+2
+  animated_text_kit: ^3.1.0
   cupertino_icons: ^1.0.1
   flutter_launcher_icons: ^0.8.1
   fluttertoast: ^7.1.6
@@ -31,7 +32,7 @@ dependencies:
   lottie: ^0.7.0+1
   provider: ^4.3.3
   shared_preferences: ^0.5.12+4
-  theme_provider: ^0.4.0+1
+  webview_flutter: ^1.0.7
 
 flutter_icons:
   android: false

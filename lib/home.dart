@@ -1,16 +1,16 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/board_tile.dart';
+import 'package:tic_tac_toe/my_portfolio.dart';
 import 'package:tic_tac_toe/theme.dart';
 import 'package:tic_tac_toe/tile_state.dart';
 
 class Home extends StatefulWidget {
-  final bool isDarkMode;
-  Home({this.isDarkMode});
   @override
   _HomeState createState() => _HomeState();
 }
@@ -46,6 +46,43 @@ class _HomeState extends State<Home> {
               color: isDark ? Colors.yellow : null,
             ),
           ],
+        ),
+        drawer: Drawer(
+          child: SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () => Get.to(MyPortfolio()),
+                  // onPressed: null,
+                  child: Text(
+                    "myPortFolio",
+                    style: TextStyle(
+                      fontSize: 25,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: null,
+                  child: Text(
+                    "Instagram",
+                    style: TextStyle(
+                      fontSize: 25,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: null,
+                  child: Text(
+                    "LinkedIn",
+                    style: TextStyle(
+                      fontSize: 25,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
         body: SafeArea(
           child: Center(
@@ -158,8 +195,16 @@ class _HomeState extends State<Home> {
           if (Platform.isIOS) {
             return CupertinoAlertDialog(
               title: Text("Winner"),
-              content: Image.asset(
-                tileState == TileState.CROSS ? 'images/x.png' : 'images/o.png',
+              content: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Image.asset(
+                    tileState == TileState.CROSS
+                        ? 'images/x.png'
+                        : 'images/o.png',
+                  ),
+                  Lottie.asset('images/surprise.json')
+                ],
               ),
               actions: [
                 FlatButton(
@@ -175,8 +220,16 @@ class _HomeState extends State<Home> {
           } else {
             return AlertDialog(
               title: Text("Winner"),
-              content: Image.asset(
-                tileState == TileState.CROSS ? 'images/x.png' : 'images/o.png',
+              content: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Image.asset(
+                    tileState == TileState.CROSS
+                        ? 'images/x.png'
+                        : 'images/o.png',
+                  ),
+                  Lottie.asset('images/surprise.json')
+                ],
               ),
               actions: [
                 FlatButton(

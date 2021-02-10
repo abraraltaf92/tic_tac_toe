@@ -1,18 +1,14 @@
-import 'dart:io';
-
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tic_tac_toe/board_tile.dart';
 import 'package:tic_tac_toe/home.dart';
 import 'package:tic_tac_toe/theme.dart';
-import 'package:tic_tac_toe/tile_state.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,12 +26,40 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   final navigatorkey = GlobalKey<NavigatorState>();
-  var _boardState = List<TileState>.filled(9, TileState.EMPTY);
-  var _currentState = TileState.CROSS; //since Cross goes the first
-  int countDraw = 0;
-  bool isDark = true;
+  AnimationController _controller;
+  Animation<Offset> _offsetAnimation;
+  Animation<double> _fadeAnimation;
+  @override
+  void initState() {
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1700),
+      vsync: this,
+    )..forward();
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    ));
+    _offsetAnimation = Tween<Offset>(
+      begin: const Offset(0.0, -50.0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.bounceOut,
+    ));
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
@@ -44,244 +68,70 @@ class _MyAppState extends State<MyApp> {
         title: 'Tic Tac Toe',
         theme: themeProvider.getTheme,
         debugShowCheckedModeBanner: false,
-        home: AnimatedSplashScreen(
-          backgroundColor: themeProvider.getTheme.backgroundColor,
-          nextScreen: Home(
-            isDarkMode: Theme.of(context).brightness == Brightness.dark,
+        home: Align(
+          alignment: Alignment.topCenter,
+          child: AnimatedSplashScreen(
+            duration: 3,
+            backgroundColor: themeProvider.getTheme.backgroundColor,
+            nextScreen: Home(),
+            splashTransition: SplashTransition.scaleTransition,
+            splash: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Lottie.asset(
+                      'images/ttt_ss.json',
+                    ),
+                  ),
+                  SlideTransition(
+                    position: _offsetAnimation,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4.0),
+                      child: Text(
+                        'HI THERE, I\'M',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        TypewriterAnimatedTextKit(
+                          text: ['Abrar', 'Altaf'],
+                          totalRepeatCount: 1,
+                          speed: Duration(milliseconds: 350),
+                          textStyle: TextStyle(
+                            color: Theme.of(context).accentColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0),
+                          child: Text(
+                            'developer of the app',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            splashIconSize: 300,
           ),
-          splash:
-              Lottie.asset('images/splashScreen.json', height: 200, width: 200),
-          duration: 2,
         ),
-        // home: Scaffold(
-        //   appBar: AppBar(
-        //     title: Text('Tic Tac Toe'),
-        //     actions: [
-        //       IconButton(
-        //         onPressed: () {
-        //           ThemeProvider themeProvider =
-        //               Provider.of<ThemeProvider>(context, listen: false);
-        //           themeProvider.swapTheme();
-        //           setState(() {
-        //             isDark = !isDark;
-        //           });
-        //         },
-        //         icon:
-        //             Icon(!isDark ? (Icons.lightbulb) : Icons.lightbulb_outline),
-        //         color: !isDark ? Colors.yellow : null,
-        //       ),
-        //       FlatButton(
-        //           onPressed: () {
-        //             Get.to(Home());
-        //           },
-        //           child: Text('j'))
-        //     ],
-        //   ),
-        //   body: SafeArea(
-        //     child: Center(
-        //       child: Stack(
-        //         children: <Widget>[
-        //           Image.asset(
-        //             'images/board.png',
-        //             color: isDark ? Colors.white54 : Colors.black,
-        //           ),
-        //           _boardTiles(),
-        //         ],
-        //       ),
-        //     ),
-        //   ),
-        //   floatingActionButton: FloatingActionButton(
-        //       backgroundColor: Colors.white54,
-        //       foregroundColor: Colors.black,
-        //       child: Icon(Icons.replay_outlined),
-        //       onPressed: () {
-        //         _resetGame();
-        //         _displaySnack(msg: 'Game Restarted');
-        //       }),
-        // ),
       );
     });
-  }
-
-  Widget _boardTiles() {
-    return Builder(builder: (context) {
-      final boardWidth = MediaQuery.of(context).size.width;
-      final tileWidth = boardWidth / 3;
-      return Container(
-        height: boardWidth,
-        width: boardWidth,
-        child: Column(
-            children: chunk(_boardState, 3).asMap().entries.map((entry) {
-          final chunkIndex = entry.key; // [ 0 , 1 , 2]
-          final tileStateChunk = entry.value;
-
-          return Row(
-              children: tileStateChunk.asMap().entries.map((innerEntry) {
-            final innerIndex = innerEntry.key;
-            final tileState = innerEntry.value;
-            final tileIndex = (chunkIndex * 3) + innerIndex;
-
-            return BoardTile(
-              tileState: tileState,
-              dimension: tileWidth,
-              onPressed: () => _updateTileStateForIndex(tileIndex),
-            );
-          }).toList()); // [ [TileState.EMPTY,TileState.EMPTY,TileState.EMPTY,][...][...]]
-        }).toList()),
-      );
-    });
-  }
-
-  void _updateTileStateForIndex(int selectedIndex) {
-    if (_boardState[selectedIndex] == TileState.EMPTY) {
-      setState(() {
-        _boardState[selectedIndex] = _currentState;
-        _currentState = _currentState == TileState.CROSS
-            ? TileState.CIRCLE
-            : TileState.CROSS;
-      });
-
-      final winner = _findWinner();
-      if (winner != null) {
-        _showWinnerDialog(winner);
-      } else {
-        countDraw += 1;
-        if (countDraw == 9) {
-          _showDrawDialog();
-        }
-      }
-    }
-  }
-
-  TileState _findWinner() {
-    TileState Function(int, int, int) winnerForMatch = (a, b, c) {
-      if (_boardState[a] != TileState.EMPTY) {
-        if ((_boardState[a] == _boardState[b]) &&
-            (_boardState[b] == _boardState[c])) {
-          return _boardState[a];
-        }
-      }
-      return null;
-    };
-
-    final checks = [
-      winnerForMatch(0, 1, 2),
-      winnerForMatch(3, 4, 5),
-      winnerForMatch(6, 7, 8),
-      winnerForMatch(0, 3, 6),
-      winnerForMatch(1, 4, 7),
-      winnerForMatch(2, 5, 8),
-      winnerForMatch(0, 4, 8),
-      winnerForMatch(2, 4, 6),
-    ];
-    TileState winner;
-
-    winner = checks.firstWhere((TileState element) => element != null,
-        orElse: () => null);
-
-    return winner;
-  }
-
-  void _showWinnerDialog(TileState tileState) {
-    final newContext = navigatorkey.currentState.overlay.context;
-    showDialog(
-        context: newContext,
-        builder: (_) {
-          if (Platform.isIOS) {
-            return CupertinoAlertDialog(
-              title: Text("Winner"),
-              content: Image.asset(
-                tileState == TileState.CROSS ? 'images/x.png' : 'images/o.png',
-              ),
-              actions: [
-                FlatButton(
-                    onPressed: () {
-                      _resetGame();
-                      Navigator.of(newContext).pop();
-                      _displaySnack(
-                          msg: 'NewGame Started', gravity: ToastGravity.CENTER);
-                    },
-                    child: Text('New Game'))
-              ],
-            );
-          } else {
-            return AlertDialog(
-              title: Text("Winner"),
-              content: Image.asset(
-                tileState == TileState.CROSS ? 'images/x.png' : 'images/o.png',
-              ),
-              actions: [
-                FlatButton(
-                    onPressed: () {
-                      _resetGame();
-                      Navigator.of(newContext).pop();
-                      _displaySnack(
-                          msg: 'NewGame Started', gravity: ToastGravity.CENTER);
-                    },
-                    child: Text('New Game'))
-              ],
-            );
-          }
-        });
-  }
-
-  void _showDrawDialog() {
-    final newContext = navigatorkey.currentState.overlay.context;
-    showDialog(
-        context: newContext,
-        builder: (_) {
-          if (Platform.isIOS) {
-            return CupertinoAlertDialog(
-              title: Text("RESULT"),
-              content: Image.asset(
-                'images/tie.png',
-                color: isDark ? null : Colors.black,
-              ),
-              actions: [
-                FlatButton(
-                    onPressed: () {
-                      _resetGame();
-                      Navigator.of(newContext).pop();
-                      _displaySnack(
-                          msg: 'NewGame Started', gravity: ToastGravity.CENTER);
-                    },
-                    child: Text('New Game'))
-              ],
-            );
-          } else {
-            return AlertDialog(
-              title: Text("RESULT"),
-              content: Image.asset(
-                'images/tie.png',
-                color: isDark ? null : Colors.black,
-              ),
-              actions: [
-                FlatButton(
-                    onPressed: () {
-                      _resetGame();
-                      Navigator.of(newContext).pop();
-                      _displaySnack(
-                          msg: 'NewGame Started', gravity: ToastGravity.CENTER);
-                    },
-                    child: Text('New Game'))
-              ],
-            );
-          }
-        });
-  }
-
-  void _resetGame() {
-    setState(() {
-      _boardState = List.filled(9, TileState.EMPTY);
-      _currentState = TileState.CROSS;
-      countDraw = 0;
-    });
-  }
-
-  void _displaySnack({@required String msg, ToastGravity gravity}) {
-    Fluttertoast.showToast(
-      msg: msg,
-      gravity: gravity,
-    );
   }
 }
