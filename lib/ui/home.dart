@@ -7,11 +7,11 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
-import 'package:tic_tac_toe/board_tile.dart';
-import 'package:tic_tac_toe/constants.dart';
+import 'package:tic_tac_toe/tileState/board_tile.dart';
+import 'package:tic_tac_toe/util/constants.dart';
 import 'package:tic_tac_toe/ui/my_portfolio.dart';
-import 'package:tic_tac_toe/theme.dart';
-import 'package:tic_tac_toe/tile_state.dart';
+import 'package:tic_tac_toe/util/theme.dart';
+import 'package:tic_tac_toe/tileState/tile_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
