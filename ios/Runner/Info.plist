@@ -42,5 +42,11 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<string>YES</string>
+	<key>LSApplicationQueriesSchemes</key>
+<array>
+        <string>itms</string>
+</array>
+
+
 	</dict> 
 </plist>

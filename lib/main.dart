@@ -1,5 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   final navigatorkey = GlobalKey<NavigatorState>();
+  final _materialKey = GlobalKey<ScaffoldState>();
   AnimationController _controller;
   Animation<Offset> _offsetAnimation;
   Animation<double> _fadeAnimation;
@@ -69,6 +71,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         theme: themeProvider.getTheme,
         debugShowCheckedModeBanner: false,
         home: Align(
+          key: _materialKey,
           alignment: Alignment.topCenter,
           child: AnimatedSplashScreen(
             duration: 3,
@@ -81,14 +84,14 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                 children: [
                   Expanded(
                     child: Lottie.asset(
-                      'images/ttt_ss.json',
+                      'images/splashScreen.json',
                     ),
                   ),
                   SlideTransition(
                     position: _offsetAnimation,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 4.0),
-                      child: Text(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: AutoSizeText(
                         'HI THERE, I\'M',
                         style: TextStyle(
                           fontSize: 20,
@@ -114,11 +117,11 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 4.0),
-                          child: Text(
+                          child: AutoSizeText(
                             'developer of the app',
                             style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
@@ -128,7 +131,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                 ],
               ),
             ),
-            splashIconSize: 300,
+            splashIconSize: 250,
           ),
         ),
       );

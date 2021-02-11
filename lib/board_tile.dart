@@ -12,6 +12,8 @@ class BoardTile extends StatelessWidget {
       height: dimension,
       width: dimension,
       child: FlatButton(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
         child: _widgetForTileState(),
         onPressed: onPressed,
       ),
@@ -28,7 +30,6 @@ class BoardTile extends StatelessWidget {
       case TileState.CROSS:
         widget = Image.asset(
           'images/x.png',
-          scale: 0.5,
         );
         break;
       case TileState.CIRCLE:

@@ -25,15 +25,19 @@ dependencies:
     sdk: flutter
   animated_splash_screen: ^1.0.1+2
   animated_text_kit: ^3.1.0
+  auto_size_text: ^2.1.0
   cupertino_icons: ^1.0.1
   flutter_launcher_icons: ^0.8.1
+  flutter_speed_dial: ^2.1.1
   fluttertoast: ^7.1.6
   get: ^3.24.0
+  launch_review: ^2.0.0
   lottie: ^0.7.0+1
   provider: ^4.3.3
+  rate_my_app: ^0.4.0
   shared_preferences: ^0.5.12+4
-  webview_flutter: ^1.0.7
-
+  url_launcher: ^5.7.10
+  share: ^0.6.5+4
 flutter_icons:
   android: false
   ios: true

@@ -1,14 +1,17 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import 'package:share/share.dart';
 import 'package:tic_tac_toe/board_tile.dart';
 import 'package:tic_tac_toe/my_portfolio.dart';
 import 'package:tic_tac_toe/theme.dart';
 import 'package:tic_tac_toe/tile_state.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -22,6 +25,7 @@ class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool isDark = true;
+  bool isPlay = true;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +34,7 @@ class _HomeState extends State<Home> {
       return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text('Tic Tac Toe'),
+          title: const Text('Tic Tac Toe'),
           actions: [
             IconButton(
               onPressed: () {
@@ -49,62 +53,232 @@ class _HomeState extends State<Home> {
         ),
         drawer: Drawer(
           child: SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () => Get.to(MyPortfolio()),
-                  // onPressed: null,
-                  child: Text(
-                    "myPortFolio",
-                    style: TextStyle(
-                      fontSize: 25,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: ListView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: const Text(
+                      'Follow us on:',
                     ),
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: null,
-                  child: Text(
-                    "Instagram",
-                    style: TextStyle(
-                      fontSize: 25,
+                  ListTile(
+                    onTap: () async {
+                      const url = 'https://instagram.com/abraraltaf92';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        throw 'Could not launch $url';
+                      }
+                    },
+                    leading: const Icon(Icons.circle),
+                    title: const Text(
+                      "Instagram",
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
                     ),
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: null,
-                  child: Text(
-                    "LinkedIn",
-                    style: TextStyle(
-                      fontSize: 25,
+                  ListTile(
+                    onTap: () async {
+                      const url = 'https://www.facebook.com/abrar.altaf1/';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        throw 'Could not launch $url';
+                      }
+                    },
+                    leading: const Icon(Icons.circle),
+                    title: const Text(
+                      "Facebook",
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  Divider(),
+                  ListTile(
+                    onTap: () async {
+                      const url = 'https://abrar-altaf92.web.app';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        throw 'Could not launch $url';
+                      }
+                    },
+                    leading: const Icon(Icons.circle),
+                    title: const Text(
+                      "Portfolio",
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                  Divider(),
+                  ListTile(
+                    onTap: () {
+                      if (Platform.isAndroid) {
+                        Share.share(
+                            'https://play.google.com/store/apps/details?id=com.abraraltaf.tic_tac_toe',
+                            subject: 'Share Tic Tac Toe');
+                      } else {
+                        Share.share('itms-apps//');
+                      }
+                    },
+                    leading: const Icon(Icons.circle),
+                    title: const Text(
+                      "Share with your friend",
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () => showAboutDialog(
+                        context: context,
+                        applicationIcon: Image.asset(
+                          'images/logo.png',
+                          width: MediaQuery.of(context).size.width * 0.1,
+                        ),
+                        applicationVersion: '0.0.1',
+                        applicationName: 'Tic Tac Toe',
+                        applicationLegalese: 'Developed by Abrar Altaf Lone',
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20.0),
+                            child: const Text(
+                              'Tic-tac-toe, is a simple mobile game for two players, X and O, who take turns marking the spaces in a 3×3 grid. The player who succeeds in placing three of their marks in a diagonal, horizontal, or vertical row is the winner.',
+                            ),
+                          )
+                        ]),
+                    // onPressed: null,
+                    leading: const Icon(Icons.circle),
+                    title: const Text(
+                      "About app",
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-        body: SafeArea(
-          child: Center(
-            child: Stack(
-              children: <Widget>[
-                Image.asset(
-                  'images/board.png',
-                  color: isDark ? Colors.white54 : Colors.black,
+        body: isPlay
+            ? SafeArea(
+                child: Stack(
+                children: [
+                  Center(
+                      child: Image.asset(
+                    'images/board.png',
+                    color: Colors.grey.withOpacity(0.03),
+                  )),
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.35,
+                          child: ElevatedButton(
+                            child: const Text('Let\'s play'),
+                            style: ButtonStyle(
+                                backgroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.white54)
+                                    : null,
+                                foregroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.black)
+                                    : null),
+                            onPressed: () {
+                              setState(() {
+                                isPlay = !isPlay;
+                              });
+                            },
+                          ),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.35,
+                          child: ElevatedButton(
+                            child: const Text('About Us'),
+                            style: ButtonStyle(
+                                backgroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.white54)
+                                    : null,
+                                foregroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.black)
+                                    : null),
+                            onPressed: () {
+                              Get.to(MyPortfolio(isDark: isDark));
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ))
+            : SafeArea(
+                child: Center(
+                  child: Stack(
+                    children: <Widget>[
+                      Image.asset(
+                        'images/board.png',
+                        color: isDark ? Colors.white54 : Colors.black,
+                      ),
+                      _boardTiles(),
+                    ],
+                  ),
                 ),
-                _boardTiles(),
-              ],
-            ),
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.white54,
-            foregroundColor: Colors.black,
-            child: Icon(Icons.replay_outlined),
-            onPressed: () {
-              _resetGame();
-              _displaySnack(msg: 'Game Restarted');
-            }),
+              ),
+        floatingActionButton: isPlay
+            ? null
+            : SpeedDial(
+                animatedIcon: AnimatedIcons.view_list,
+                animatedIconTheme: IconThemeData(size: 25),
+                backgroundColor: Colors.white70,
+                foregroundColor: Colors.black,
+                visible: true,
+                curve: Curves.bounceIn,
+                children: [
+                  // FAB 1
+                  SpeedDialChild(
+                      child: const Icon(Icons.replay_outlined),
+                      backgroundColor: Colors.white54,
+                      onTap: () {
+                        _resetGame();
+                        _displaySnack(msg: 'Game Restarted');
+                      },
+                      label: 'Restart',
+                      labelStyle: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16.0,
+                          color: isDark ? Colors.black : null),
+                      labelBackgroundColor: Colors.white54),
+
+                  SpeedDialChild(
+                      child: const Icon(Icons.close),
+                      backgroundColor: Colors.white54,
+                      onTap: () {
+                        _resetGame();
+                        setState(() {
+                          isPlay = !isPlay;
+                        });
+                      },
+                      label: 'Quit',
+                      labelStyle: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: isDark ? Colors.black : null,
+                          fontSize: 16.0),
+                      labelBackgroundColor: Colors.white54)
+                ],
+              ),
       );
     });
   }
@@ -194,7 +368,7 @@ class _HomeState extends State<Home> {
         builder: (_) {
           if (Platform.isIOS) {
             return CupertinoAlertDialog(
-              title: Text("Winner"),
+              title: const Text("Winner"),
               content: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -214,12 +388,12 @@ class _HomeState extends State<Home> {
                       _displaySnack(
                           msg: 'NewGame Started', gravity: ToastGravity.CENTER);
                     },
-                    child: Text('New Game'))
+                    child: const Text('New Game'))
               ],
             );
           } else {
             return AlertDialog(
-              title: Text("Winner"),
+              title: const Text("Winner"),
               content: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -239,7 +413,7 @@ class _HomeState extends State<Home> {
                       _displaySnack(
                           msg: 'NewGame Started', gravity: ToastGravity.CENTER);
                     },
-                    child: Text('New Game'))
+                    child: const Text('New Game'))
               ],
             );
           }
@@ -252,10 +426,10 @@ class _HomeState extends State<Home> {
         builder: (_) {
           if (Platform.isIOS) {
             return CupertinoAlertDialog(
-              title: Text("RESULT"),
+              title: const Text("RESULT"),
               content: Image.asset(
                 'images/tie.png',
-                color: isDark ? null : Colors.black,
+                color: Colors.red,
               ),
               actions: [
                 FlatButton(
@@ -265,16 +439,13 @@ class _HomeState extends State<Home> {
                       _displaySnack(
                           msg: 'NewGame Started', gravity: ToastGravity.CENTER);
                     },
-                    child: Text('New Game'))
+                    child: const Text('New Game'))
               ],
             );
           } else {
             return AlertDialog(
-              title: Text("RESULT"),
-              content: Image.asset(
-                'images/tie.png',
-                color: isDark ? null : Colors.black,
-              ),
+              title: const Text("RESULT"),
+              content: Image.asset('images/tie.png', color: Colors.red),
               actions: [
                 FlatButton(
                     onPressed: () {
@@ -283,7 +454,7 @@ class _HomeState extends State<Home> {
                       _displaySnack(
                           msg: 'NewGame Started', gravity: ToastGravity.CENTER);
                     },
-                    child: Text('New Game'))
+                    child: const Text('New Game'))
               ],
             );
           }
@@ -305,3 +476,5 @@ class _HomeState extends State<Home> {
     );
   }
 }
+
+//
