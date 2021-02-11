@@ -43,10 +43,7 @@ class _HomeState extends State<Home> {
                   ThemeProvider themeProvider =
                       Provider.of<ThemeProvider>(context, listen: false);
                   themeProvider.swapTheme();
-
-                  setState(() {
-                    isDark = !isDark;
-                  });
+                  isDark = themeProvider.getTheme == ThemeData.dark();
                 },
                 icon:
                     Icon(isDark ? (Icons.lightbulb) : Icons.lightbulb_outline),
@@ -59,6 +56,7 @@ class _HomeState extends State<Home> {
               child: Padding(
                 padding: const EdgeInsets.only(top: 16),
                 child: ListView(
+                  shrinkWrap: true,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                   children: [

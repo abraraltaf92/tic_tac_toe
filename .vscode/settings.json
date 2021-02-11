@@ -1,3 +1,4 @@
 {
-    "dart.flutterSdkPath": "/Users/abraraltaflone/code/developer/flutter"
+    "dart.flutterSdkPath": "/Users/abraraltaflone/code/developer/flutter",
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

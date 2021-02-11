@@ -7,14 +7,10 @@ import 'package:tic_tac_toe/util/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:tic_tac_toe/util/config.dart';
 
-class MyPortfolio extends StatefulWidget {
+class MyPortfolio extends StatelessWidget {
   MyPortfolio({@required this.isDark});
-  final bool isDark;
-  @override
-  _MyPortfolioState createState() => _MyPortfolioState();
-}
 
-class _MyPortfolioState extends State<MyPortfolio> {
+  final bool isDark;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,7 +107,7 @@ class _MyPortfolioState extends State<MyPortfolio> {
                       },
                       child: Image.asset('images/bmc.png'),
                       style: ButtonStyle(
-                          backgroundColor: widget.isDark
+                          backgroundColor: isDark
                               ? MaterialStateColor.resolveWith(
                                   (states) => Colors.white54)
                               : null),
