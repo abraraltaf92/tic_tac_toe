@@ -1,9 +1,9 @@
 import 'dart:io';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:launch_review/launch_review.dart';
+import 'package:tic_tac_toe/util/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:tic_tac_toe/util/config.dart';
 
@@ -38,7 +38,7 @@ class _MyPortfolioState extends State<MyPortfolio> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   AutoSizeText(
-                    'Actually not us, its me!\nI\nam\na\nFlutter Developer\n who loves to build responsive and scalable apps for Android, IOS and Web. I am currently in a race to grab as much I can from the innovative world to create more innovations. I believe in unlearning errors. And I love to code ; ',
+                    aboutMe,
                     style: TextStyle(wordSpacing: 1, height: 1.5),
                     textAlign: TextAlign.center,
                   ),
@@ -46,7 +46,7 @@ class _MyPortfolioState extends State<MyPortfolio> {
                     height: 5,
                   ),
                   AutoSizeText(
-                    'Also, it\'s just a beginning, a lot of stuff is in the pipeline. Show your love by supporting me and share your review about the app and also specify the kind of apps you want from the developer in the future. ',
+                    itsJustABeginning,
                     style: TextStyle(wordSpacing: 1, height: 1.5),
                     textAlign: TextAlign.center,
                   ),
@@ -65,7 +65,8 @@ class _MyPortfolioState extends State<MyPortfolio> {
                                 return CupertinoAlertDialog(
                                   title: const Text("Rate this app"),
                                   content: const Text(
-                                      'You like this app ? Then take a little bit of your time to leave a rating :'),
+                                    appRating,
+                                  ),
                                   actions: [
                                     FlatButton(
                                         onPressed: () {
@@ -79,8 +80,7 @@ class _MyPortfolioState extends State<MyPortfolio> {
                               } else {
                                 return AlertDialog(
                                   title: const Text("Rate this app"),
-                                  content: const Text(
-                                      'You like this app ? Then take a little bit of your time to leave a rating :'),
+                                  content: const Text(appRating),
                                   actions: [
                                     FlatButton(
                                         onPressed: () {
@@ -102,7 +102,7 @@ class _MyPortfolioState extends State<MyPortfolio> {
                     width: MediaQuery.of(context).size.width * 0.5,
                     child: ElevatedButton(
                       onPressed: () async {
-                        const url = 'https://www.buymeacoffee.com/abraraltaf92';
+                        const url = buyMeACoffee;
                         if (await canLaunch(url)) {
                           await launch(url);
                         } else {
