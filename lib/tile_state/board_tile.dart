@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tic_tac_toe/tileState/tile_state.dart';
+import 'package:tic_tac_toe/tile_state/tile_state.dart';
 
 class BoardTile extends StatelessWidget {
   final TileState tileState;

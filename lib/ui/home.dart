@@ -7,11 +7,11 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
-import 'package:tic_tac_toe/tileState/board_tile.dart';
+import 'package:tic_tac_toe/tile_state/board_tile.dart';
+import 'package:tic_tac_toe/tile_state/tile_state.dart';
 import 'package:tic_tac_toe/util/constants.dart';
 import 'package:tic_tac_toe/ui/my_portfolio.dart';
 import 'package:tic_tac_toe/util/theme.dart';
-import 'package:tic_tac_toe/tileState/tile_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
@@ -152,7 +152,45 @@ class _HomeState extends State<Home> {
                               child: const Text(
                                 licenseContent,
                               ),
-                            )
+                            ),
+                            TextButton(
+                              child: Opacity(
+                                opacity: 0.8,
+                                child: Text(
+                                  'Tic Tac Toe animation by OkenwA on LottieFiles',
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      decoration: TextDecoration.underline),
+                                ),
+                              ),
+                              onPressed: () async {
+                                const url = boardAnimationLink;
+                                if (await canLaunch(url)) {
+                                  await launch(url);
+                                } else {
+                                  throw 'Could not launch $url';
+                                }
+                              },
+                            ),
+                            TextButton(
+                              child: Opacity(
+                                opacity: 0.8,
+                                child: Text(
+                                  'Confetti Party animation by Bit Bit on LottieFiles',
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      decoration: TextDecoration.underline),
+                                ),
+                              ),
+                              onPressed: () async {
+                                const url = winnerSurpriseLink;
+                                if (await canLaunch(url)) {
+                                  await launch(url);
+                                } else {
+                                  throw 'Could not launch $url';
+                                }
+                              },
+                            ),
                           ]),
                       // onPressed: null,
                       leading: const Icon(Icons.circle),

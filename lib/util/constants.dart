@@ -12,3 +12,6 @@ const String itsJustABeginning =
     'Also, it\'s just a beginning, a lot of stuff is in the pipeline. Show your love by supporting me and share your review about the app and also specify the kind of apps you want from the developer in the future. ';
 const String appRating =
     'Also, it\'s just a beginning, a lot of stuff is in the pipeline. Show your love by supporting me and share your review about the app and also specify the kind of apps you want from the developer in the future. ';
+const String boardAnimationLink = 'https://lottiefiles.com/27327-tic-tac-toe';
+const String winnerSurpriseLink =
+    'https://lottiefiles.com/37723-confetti-partyyy';
