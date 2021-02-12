@@ -12,6 +12,7 @@ import 'package:tic_tac_toe/tile_state/board_tile.dart';
 import 'package:tic_tac_toe/tile_state/tile_state.dart';
 import 'package:tic_tac_toe/util/constants.dart';
 import 'package:tic_tac_toe/ui/my_portfolio.dart';
+import 'package:tic_tac_toe/util/licenses.dart';
 import 'package:tic_tac_toe/util/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -76,8 +77,7 @@ class _HomeState extends State<Home> {
                           throw 'Could not launch $url';
                         }
                       },
-                      leading:
-                          Expanded(child: const Icon(FontAwesome.instagram)),
+                      leading: const Icon(FontAwesome.instagram),
                       title: const Text(
                         "Instagram",
                         style: TextStyle(
@@ -139,61 +139,7 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                     ListTile(
-                      onTap: () => showAboutDialog(
-                          context: context,
-                          applicationIcon: Image.asset(
-                            'images/logo.png',
-                            width: MediaQuery.of(context).size.width * 0.1,
-                          ),
-                          applicationVersion: '0.0.1',
-                          applicationName: 'Tic Tac Toe',
-                          applicationLegalese: 'Developed by Abrar Altaf Lone',
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20.0),
-                              child: const Text(
-                                licenseContent,
-                              ),
-                            ),
-                            TextButton(
-                              child: Opacity(
-                                opacity: 0.8,
-                                child: Text(
-                                  'Tic Tac Toe animation by OkenwA on LottieFiles',
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      decoration: TextDecoration.underline),
-                                ),
-                              ),
-                              onPressed: () async {
-                                const url = boardAnimationLink;
-                                if (await canLaunch(url)) {
-                                  await launch(url);
-                                } else {
-                                  throw 'Could not launch $url';
-                                }
-                              },
-                            ),
-                            TextButton(
-                              child: Opacity(
-                                opacity: 0.8,
-                                child: Text(
-                                  'Confetti Party animation by Bit Bit on LottieFiles',
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      decoration: TextDecoration.underline),
-                                ),
-                              ),
-                              onPressed: () async {
-                                const url = winnerSurpriseLink;
-                                if (await canLaunch(url)) {
-                                  await launch(url);
-                                } else {
-                                  throw 'Could not launch $url';
-                                }
-                              },
-                            ),
-                          ]),
+                      onTap: () => showLicense(context: context),
                       // onPressed: null,
                       leading: const Icon(FontAwesome.info_circle),
                       title: const Text(
