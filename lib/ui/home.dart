@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -75,7 +76,8 @@ class _HomeState extends State<Home> {
                           throw 'Could not launch $url';
                         }
                       },
-                      leading: const Icon(Icons.circle),
+                      leading:
+                          Expanded(child: const Icon(FontAwesome.instagram)),
                       title: const Text(
                         "Instagram",
                         style: TextStyle(
@@ -92,7 +94,7 @@ class _HomeState extends State<Home> {
                           throw 'Could not launch $url';
                         }
                       },
-                      leading: const Icon(Icons.circle),
+                      leading: const Icon(FontAwesome.facebook),
                       title: const Text(
                         "Facebook",
                         style: TextStyle(
@@ -110,7 +112,7 @@ class _HomeState extends State<Home> {
                           throw 'Could not launch $url';
                         }
                       },
-                      leading: const Icon(Icons.circle),
+                      leading: const Icon(FontAwesome.file_powerpoint_o),
                       title: const Text(
                         "Portfolio",
                         style: TextStyle(
@@ -128,7 +130,7 @@ class _HomeState extends State<Home> {
                           Share.share('itms-apps//');
                         }
                       },
-                      leading: const Icon(Icons.circle),
+                      leading: const Icon(FontAwesome.share),
                       title: const Text(
                         "Share with your friend",
                         style: TextStyle(
@@ -193,7 +195,7 @@ class _HomeState extends State<Home> {
                             ),
                           ]),
                       // onPressed: null,
-                      leading: const Icon(Icons.circle),
+                      leading: const Icon(FontAwesome.info_circle),
                       title: const Text(
                         "About app",
                         style: TextStyle(
