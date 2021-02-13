@@ -22,6 +22,7 @@ class _TestState extends State<Test> {
     return await audioPlayer.stop();
   }
 
+  bool isSound = true;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -44,6 +45,16 @@ class _TestState extends State<Test> {
                   await audioPlayer.earpieceOrSpeakersToggle();
                 },
                 child: Text('Toggle'),
+              ),
+            ),
+            Container(
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    isSound = !isSound;
+                  });
+                },
+                child: Text('Sound Off'),
               ),
             ),
           ],

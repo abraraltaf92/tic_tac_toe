@@ -9,16 +9,24 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tic_tac_toe/ui/home.dart';
+import 'package:tic_tac_toe/util/sound.dart';
 import 'package:tic_tac_toe/util/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  runApp(ChangeNotifierProvider(
-    child: new MyApp(),
-    create: (BuildContext context) =>
-        ThemeProvider(isDarkMode: prefs.getBool('isDarkTheme') ?? true),
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(
+        create: (BuildContext context) =>
+            ThemeProvider(isDarkMode: prefs.getBool('isDarkTheme') ?? true),
+      ),
+      ChangeNotifierProvider(
+          create: (BuildContext context) =>
+              SoundProvider(isSound: prefs.getBool('isSound') ?? true)),
+    ],
+    child: MyApp(),
   ));
 }
 
@@ -64,7 +72,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
+    return Consumer2<ThemeProvider, SoundProvider>(
+        builder: (context, themeProvider, soundProvider, child) {
       return GetMaterialApp(
         navigatorKey: navigatorkey,
         title: 'Tic Tac Toe',

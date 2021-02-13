@@ -25,5 +25,5 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  ThemeData get getTheme => _selectedTheme;
+  ThemeData get getTheme => _selectedTheme ?? dark;
 }

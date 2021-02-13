@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -9,16 +10,17 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
-import 'package:tic_tac_toe/test.dart';
 import 'package:tic_tac_toe/tile_state/board_tile.dart';
 import 'package:tic_tac_toe/tile_state/tile_state.dart';
 import 'package:tic_tac_toe/util/constants.dart';
 import 'package:tic_tac_toe/ui/my_portfolio.dart';
 import 'package:tic_tac_toe/util/licenses.dart';
+import 'package:tic_tac_toe/util/sound.dart';
 import 'package:tic_tac_toe/util/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
+  //  for functions other then build widget (general)
   @override
   _HomeState createState() => _HomeState();
 }
@@ -28,226 +30,237 @@ class _HomeState extends State<Home> {
   var _currentState = TileState.CROSS; //since Cross goes the first
   int countDraw = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool isDark = true;
   bool isPlay = true;
-  bool isSound = true;
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
-      bool isDark = themeProvider.getTheme == ThemeData.dark();
+    ThemeProvider themeProvider =
+        Provider.of<ThemeProvider>(context, listen: false);
+    SoundProvider soundProvider =
+        Provider.of<SoundProvider>(context, listen: false);
+    bool isDark = themeProvider.getTheme == ThemeData.dark();
+    bool isSound = soundProvider.getSound;
 
-      return Scaffold(
-          key: _scaffoldKey,
-          appBar: AppBar(
-            title: const Text('Tic Tac Toe'),
-            centerTitle: true,
-            actions: [
-              IconButton(
-                onPressed: () {
-                  ThemeProvider themeProvider =
-                      Provider.of<ThemeProvider>(context, listen: false);
-                  themeProvider.swapTheme();
-                  isDark = themeProvider.getTheme == ThemeData.dark();
-                },
-                icon:
-                    Icon(isDark ? (Icons.lightbulb) : Icons.lightbulb_outline),
-                color: isDark ? Colors.yellow : null,
-              ),
-            ],
-          ),
-          drawer: Drawer(
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: ListView(
-                  shrinkWrap: true,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: const Text(
-                        'Follow us on:',
+    return Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: const Text('Tic Tac Toe'),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              onPressed: () {
+                themeProvider.swapTheme();
+                setState(() {
+                  isDark = isDark;
+                });
+              },
+              icon: Icon(isDark ? (Icons.lightbulb) : Icons.lightbulb_outline),
+              color: isDark ? Colors.yellow : null,
+            ),
+          ],
+        ),
+        drawer: Drawer(
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: ListView(
+                shrinkWrap: true,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: const Text(
+                      'Follow us on:',
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () async {
+                      const url = instaLink;
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        throw 'Could not launch $url';
+                      }
+                    },
+                    leading: const Icon(FontAwesome.instagram),
+                    title: const Text(
+                      "Instagram",
+                      style: TextStyle(
+                        fontSize: 15,
                       ),
                     ),
-                    ListTile(
-                      onTap: () async {
-                        const url = instaLink;
-                        if (await canLaunch(url)) {
-                          await launch(url);
-                        } else {
-                          throw 'Could not launch $url';
-                        }
-                      },
-                      leading: const Icon(FontAwesome.instagram),
-                      title: const Text(
-                        "Instagram",
-                        style: TextStyle(
-                          fontSize: 15,
-                        ),
+                  ),
+                  ListTile(
+                    onTap: () async {
+                      const url = fbLink;
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        throw 'Could not launch $url';
+                      }
+                    },
+                    leading: const Icon(FontAwesome.facebook),
+                    title: const Text(
+                      "Facebook",
+                      style: TextStyle(
+                        fontSize: 15,
                       ),
                     ),
-                    ListTile(
-                      onTap: () async {
-                        const url = fbLink;
-                        if (await canLaunch(url)) {
-                          await launch(url);
-                        } else {
-                          throw 'Could not launch $url';
-                        }
-                      },
-                      leading: const Icon(FontAwesome.facebook),
-                      title: const Text(
-                        "Facebook",
-                        style: TextStyle(
-                          fontSize: 15,
-                        ),
+                  ),
+                  Divider(),
+                  ListTile(
+                    onTap: () async {
+                      const url = myPortfolio;
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        throw 'Could not launch $url';
+                      }
+                    },
+                    leading: const Icon(FontAwesome.file_powerpoint_o),
+                    title: const Text(
+                      "Portfolio",
+                      style: TextStyle(
+                        fontSize: 15,
                       ),
                     ),
-                    Divider(),
-                    ListTile(
-                      onTap: () async {
-                        const url = myPortfolio;
-                        if (await canLaunch(url)) {
-                          await launch(url);
-                        } else {
-                          throw 'Could not launch $url';
-                        }
-                      },
-                      leading: const Icon(FontAwesome.file_powerpoint_o),
-                      title: const Text(
-                        "Portfolio",
-                        style: TextStyle(
-                          fontSize: 15,
-                        ),
+                  ),
+                  Divider(),
+                  ListTile(
+                    onTap: () {
+                      if (Platform.isAndroid) {
+                        Share.share(googlePlayStoreLink,
+                            subject: 'Share Tic Tac Toe');
+                      } else {
+                        Share.share('itms-apps//');
+                      }
+                    },
+                    leading: const Icon(FontAwesome.share),
+                    title: const Text(
+                      "Share with your friend",
+                      style: TextStyle(
+                        fontSize: 18,
                       ),
                     ),
-                    Divider(),
-                    ListTile(
-                      onTap: () {
-                        if (Platform.isAndroid) {
-                          Share.share(googlePlayStoreLink,
-                              subject: 'Share Tic Tac Toe');
-                        } else {
-                          Share.share('itms-apps//');
-                        }
-                      },
-                      leading: const Icon(FontAwesome.share),
-                      title: const Text(
-                        "Share with your friend",
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
+                  ),
+                  ListTile(
+                    onTap: () => showLicense(context: context),
+                    // onPressed: null,
+                    leading: const Icon(FontAwesome.info_circle),
+                    title: const Text(
+                      "About app",
+                      style: TextStyle(
+                        fontSize: 18,
                       ),
                     ),
-                    ListTile(
-                      onTap: () => showLicense(context: context),
-                      // onPressed: null,
-                      leading: const Icon(FontAwesome.info_circle),
-                      title: const Text(
-                        "About app",
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-          body: isPlay
-              ? SafeArea(
-                  child: Stack(
-                  children: [
-                    Center(
-                        child: Image.asset(
-                      'assets/images/board.png',
-                      color: Colors.grey.withOpacity(0.03),
-                    )),
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.35,
-                            child: ElevatedButton(
-                              child: const Text('Let\'s play'),
-                              style: ButtonStyle(
-                                  backgroundColor: isDark
-                                      ? MaterialStateColor.resolveWith(
-                                          (states) => Colors.white54)
-                                      : null,
-                                  foregroundColor: isDark
-                                      ? MaterialStateColor.resolveWith(
-                                          (states) => Colors.black)
-                                      : null),
-                              onPressed: () {
-                                setState(() {
-                                  isPlay = !isPlay;
-                                });
-                              },
-                            ),
+        ),
+        body: isPlay
+            ? SafeArea(
+                child: Stack(
+                children: [
+                  Center(
+                      child: Image.asset(
+                    'assets/images/board.png',
+                    color: Colors.grey.withOpacity(0.03),
+                  )),
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.35,
+                          child: ElevatedButton(
+                            child: const Text('Let\'s play'),
+                            style: ButtonStyle(
+                                backgroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.white54)
+                                    : null,
+                                foregroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.black)
+                                    : null),
+                            onPressed: () {
+                              setState(() {
+                                isPlay = !isPlay;
+                              });
+                            },
                           ),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.35,
-                            child: ElevatedButton(
-                              child: const Text('About Us'),
-                              style: ButtonStyle(
-                                  backgroundColor: isDark
-                                      ? MaterialStateColor.resolveWith(
-                                          (states) => Colors.white54)
-                                      : null,
-                                  foregroundColor: isDark
-                                      ? MaterialStateColor.resolveWith(
-                                          (states) => Colors.black)
-                                      : null),
-                              onPressed: () {
-                                Get.to(MyPortfolio(isDark: isDark));
-                              },
-                            ),
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.35,
-                            child: ElevatedButton(
-                              child: const Text('Sound'),
-                              style: ButtonStyle(
-                                  backgroundColor: isDark
-                                      ? MaterialStateColor.resolveWith(
-                                          (states) => Colors.white54)
-                                      : null,
-                                  foregroundColor: isDark
-                                      ? MaterialStateColor.resolveWith(
-                                          (states) => Colors.black)
-                                      : null),
-                              onPressed: () {
-                                Get.to(Test());
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ))
-              : SafeArea(
-                  child: Center(
-                    child: Stack(
-                      children: <Widget>[
-                        Image.asset(
-                          'assets/images/board.png',
-                          color: isDark ? Colors.white54 : Colors.black,
                         ),
-                        _boardTiles(isSound: isSound),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.35,
+                          child: ElevatedButton(
+                            child: const Text('About Us'),
+                            style: ButtonStyle(
+                                backgroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.white54)
+                                    : null,
+                                foregroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.black)
+                                    : null),
+                            onPressed: () {
+                              Get.to(MyPortfolio(isDark: isDark));
+                            },
+                          ),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.35,
+                          child: ElevatedButton(
+                            child: (isSound)
+                                ? Text(
+                                    'Sound effect: OFF',
+                                    textAlign: TextAlign.center,
+                                  )
+                                : Text('Sound effect: ON',
+                                    textAlign: TextAlign.center),
+                            style: ButtonStyle(
+                                backgroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.white54)
+                                    : null,
+                                foregroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.black)
+                                    : null),
+                            onPressed: () async {
+                              // Get.to(Test());
+                              soundProvider.swapSound();
+                              setState(() {
+                                isSound = isSound;
+                              });
+                            },
+                          ),
+                        ),
                       ],
                     ),
                   ),
+                ],
+              ))
+            : SafeArea(
+                child: Center(
+                  child: Stack(
+                    children: <Widget>[
+                      Image.asset(
+                        'assets/images/board.png',
+                        color: isDark ? Colors.white54 : Colors.black,
+                      ),
+                      _boardTiles(isSound: isSound, isDark: isDark),
+                    ],
+                  ),
                 ),
-          floatingActionButton: isPlay ? null : _speedDial());
-    });
+              ),
+        floatingActionButton: isPlay ? null : _speedDial(isDark: isDark));
   }
 
-  Widget _speedDial() {
+  Widget _speedDial({@required bool isDark}) {
     return SpeedDial(
       animatedIcon: AnimatedIcons.view_list,
       animatedIconTheme: IconThemeData(size: 25),
@@ -262,13 +275,13 @@ class _HomeState extends State<Home> {
             backgroundColor: Colors.white54,
             onTap: () {
               _resetGame();
-              _displaySnack(msg: 'Game Restarted');
+              _displaySnack(msg: 'Game Restarted', isDark: isDark);
             },
             label: 'Restart',
             labelStyle: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 16.0,
-                color: isDark ? Colors.black : null),
+                color: Colors.black),
             labelBackgroundColor: Colors.white54),
 
         SpeedDialChild(
@@ -283,14 +296,14 @@ class _HomeState extends State<Home> {
             label: 'Quit',
             labelStyle: TextStyle(
                 fontWeight: FontWeight.w500,
-                color: isDark ? Colors.black : null,
+                color: Colors.black,
                 fontSize: 16.0),
             labelBackgroundColor: Colors.white54)
       ],
     );
   }
 
-  Widget _boardTiles({@required bool isSound}) {
+  Widget _boardTiles({@required bool isSound, @required bool isDark}) {
     return Builder(builder: (context) {
       final boardWidth = MediaQuery.of(context).size.width;
       final tileWidth = boardWidth / 3;
@@ -312,15 +325,17 @@ class _HomeState extends State<Home> {
               tileState: tileState,
               dimension: tileWidth,
               onPressed: () {
-                _updateTileStateForIndex(tileIndex);
+                _updateTileStateForIndex(tileIndex, isDark);
                 if (isSound && tileState == TileState.EMPTY) {
                   final player = AudioCache();
                   player.play('sounds/bubble_popping.mp3');
+                  // SystemSound.play(SystemSoundType.click);
                 }
                 if (tileState != TileState.EMPTY) {
                   _displaySnack(
                       msg: 'Space already occupied',
-                      gravity: ToastGravity.CENTER);
+                      gravity: ToastGravity.CENTER,
+                      isDark: isDark);
                 }
               },
             );
@@ -330,7 +345,7 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void _updateTileStateForIndex(int selectedIndex) {
+  void _updateTileStateForIndex(int selectedIndex, bool isDark) {
     if (_boardState[selectedIndex] == TileState.EMPTY) {
       setState(() {
         _boardState[selectedIndex] = _currentState;
@@ -341,11 +356,11 @@ class _HomeState extends State<Home> {
 
       final winner = _findWinner();
       if (winner != null) {
-        _showWinnerDialog(winner);
+        _showWinnerDialog(winner, isDark);
       } else {
         countDraw += 1;
         if (countDraw == 9) {
-          _showDrawDialog();
+          _showDrawDialog(isDark: isDark);
         }
       }
     }
@@ -380,7 +395,7 @@ class _HomeState extends State<Home> {
     return winner;
   }
 
-  void _showWinnerDialog(TileState tileState) {
+  void _showWinnerDialog(TileState tileState, bool isDark) {
     showDialog(
         context: context,
         builder: (_) {
@@ -404,7 +419,9 @@ class _HomeState extends State<Home> {
                       _resetGame();
                       Navigator.of(context).pop();
                       _displaySnack(
-                          msg: 'NewGame Started', gravity: ToastGravity.CENTER);
+                          msg: 'NewGame Started',
+                          gravity: ToastGravity.CENTER,
+                          isDark: isDark);
                     },
                     child: const Text('New Game'))
               ],
@@ -429,7 +446,9 @@ class _HomeState extends State<Home> {
                       _resetGame();
                       Navigator.of(context).pop();
                       _displaySnack(
-                          msg: 'NewGame Started', gravity: ToastGravity.CENTER);
+                          msg: 'NewGame Started',
+                          gravity: ToastGravity.CENTER,
+                          isDark: isDark);
                     },
                     child: const Text('New Game'))
               ],
@@ -438,7 +457,7 @@ class _HomeState extends State<Home> {
         });
   }
 
-  void _showDrawDialog() {
+  void _showDrawDialog({@required bool isDark}) {
     showDialog(
         context: context,
         builder: (_) {
@@ -455,7 +474,9 @@ class _HomeState extends State<Home> {
                       _resetGame();
                       Navigator.of(context).pop();
                       _displaySnack(
-                          msg: 'NewGame Started', gravity: ToastGravity.CENTER);
+                          msg: 'NewGame Started',
+                          gravity: ToastGravity.CENTER,
+                          isDark: isDark);
                     },
                     child: const Text('New Game'))
               ],
@@ -470,7 +491,9 @@ class _HomeState extends State<Home> {
                       _resetGame();
                       Navigator.of(context).pop();
                       _displaySnack(
-                          msg: 'NewGame Started', gravity: ToastGravity.CENTER);
+                          msg: 'NewGame Started',
+                          gravity: ToastGravity.CENTER,
+                          isDark: isDark);
                     },
                     child: const Text('New Game'))
               ],
@@ -487,10 +510,12 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void _displaySnack({@required String msg, ToastGravity gravity}) {
+  void _displaySnack(
+      {@required String msg, ToastGravity gravity, @required bool isDark}) {
     Fluttertoast.showToast(
       msg: msg,
       gravity: gravity,
+      backgroundColor: isDark ? Colors.black : Colors.grey,
     );
   }
 }
