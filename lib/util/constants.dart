@@ -15,3 +15,5 @@ const String appRating =
 const String boardAnimationLink = 'https://lottiefiles.com/27327-tic-tac-toe';
 const String winnerSurpriseLink =
     'https://lottiefiles.com/37723-confetti-partyyy';
+const String additionalSoundEffectsLink =
+    'Additional sound effects from https://www.zapsplat.com';

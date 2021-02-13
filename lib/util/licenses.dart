@@ -57,5 +57,25 @@ showLicense({BuildContext context}) {
             }
           },
         ),
+        TextButton(
+          child: Opacity(
+            opacity: 0.8,
+            child: Text(
+              'Sound from https://www.zapsplat.com',
+              style: TextStyle(
+                fontSize: 10,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
+          onPressed: () async {
+            const url = additionalSoundEffectsLink;
+            if (await canLaunch(url)) {
+              await launch(url);
+            } else {
+              throw 'Could not launch $url';
+            }
+          },
+        ),
       ]);
 }

@@ -9,8 +9,9 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tic_tac_toe/ui/home.dart';
-import 'package:tic_tac_toe/util/sound.dart';
-import 'package:tic_tac_toe/util/theme.dart';
+import 'package:tic_tac_toe/notifiers/music.dart';
+import 'package:tic_tac_toe/notifiers/sound.dart';
+import 'package:tic_tac_toe/notifiers/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +26,10 @@ Future<void> main() async {
       ChangeNotifierProvider(
           create: (BuildContext context) =>
               SoundProvider(isSound: prefs.getBool('isSound') ?? true)),
+      ChangeNotifierProvider(
+          create: (BuildContext context) => MusicProvider(
+                isMusic: prefs.getBool('isMusic') ?? false,
+              )),
     ],
     child: MyApp(),
   ));
@@ -41,6 +46,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   AnimationController _controller;
   Animation<Offset> _offsetAnimation;
   Animation<double> _fadeAnimation;
+
   @override
   void initState() {
     _controller = AnimationController(
@@ -72,8 +78,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<ThemeProvider, SoundProvider>(
-        builder: (context, themeProvider, soundProvider, child) {
+    return Consumer3<ThemeProvider, SoundProvider, MusicProvider>(
+        builder: (context, themeProvider, soundProvider, musicProvider, child) {
       return GetMaterialApp(
         navigatorKey: navigatorkey,
         title: 'Tic Tac Toe',

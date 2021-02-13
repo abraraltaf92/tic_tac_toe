@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
@@ -15,8 +16,9 @@ import 'package:tic_tac_toe/tile_state/tile_state.dart';
 import 'package:tic_tac_toe/util/constants.dart';
 import 'package:tic_tac_toe/ui/my_portfolio.dart';
 import 'package:tic_tac_toe/util/licenses.dart';
-import 'package:tic_tac_toe/util/sound.dart';
-import 'package:tic_tac_toe/util/theme.dart';
+import 'package:tic_tac_toe/notifiers/music.dart';
+import 'package:tic_tac_toe/notifiers/sound.dart';
+import 'package:tic_tac_toe/notifiers/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
@@ -31,15 +33,20 @@ class _HomeState extends State<Home> {
   int countDraw = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isPlay = true;
-
+  AudioCache cache = AudioCache(); // you have this
+  AudioPlayer player = AudioPlayer(); //
   @override
   Widget build(BuildContext context) {
     ThemeProvider themeProvider =
         Provider.of<ThemeProvider>(context, listen: false);
     SoundProvider soundProvider =
         Provider.of<SoundProvider>(context, listen: false);
+    MusicProvider musicProvider =
+        Provider.of<MusicProvider>(context, listen: false);
+
     bool isDark = themeProvider.getTheme == ThemeData.dark();
     bool isSound = soundProvider.getSound;
+    bool isMusic = musicProvider.getMusic;
 
     return Scaffold(
         key: _scaffoldKey,
@@ -196,30 +203,12 @@ class _HomeState extends State<Home> {
                         Container(
                           width: MediaQuery.of(context).size.width * 0.35,
                           child: ElevatedButton(
-                            child: const Text('About Us'),
-                            style: ButtonStyle(
-                                backgroundColor: isDark
-                                    ? MaterialStateColor.resolveWith(
-                                        (states) => Colors.white54)
-                                    : null,
-                                foregroundColor: isDark
-                                    ? MaterialStateColor.resolveWith(
-                                        (states) => Colors.black)
-                                    : null),
-                            onPressed: () {
-                              Get.to(MyPortfolio(isDark: isDark));
-                            },
-                          ),
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.35,
-                          child: ElevatedButton(
                             child: (isSound)
                                 ? Text(
-                                    'Sound effect: OFF',
+                                    'Sound effects: off',
                                     textAlign: TextAlign.center,
                                   )
-                                : Text('Sound effect: ON',
+                                : Text('Sound effects: on',
                                     textAlign: TextAlign.center),
                             style: ButtonStyle(
                                 backgroundColor: isDark
@@ -232,10 +221,66 @@ class _HomeState extends State<Home> {
                                     : null),
                             onPressed: () async {
                               // Get.to(Test());
-                              soundProvider.swapSound();
+
+                              await soundProvider.swapSound();
+
                               setState(() {
                                 isSound = isSound;
                               });
+                            },
+                          ),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.35,
+                          child: ElevatedButton(
+                            child: (isMusic)
+                                ? Text(
+                                    'Music: off',
+                                    textAlign: TextAlign.center,
+                                  )
+                                : Text('Music: on',
+                                    textAlign: TextAlign.center),
+                            style: ButtonStyle(
+                                backgroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.white54)
+                                    : null,
+                                foregroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.black)
+                                    : null),
+                            onPressed: () async {
+                              // Get.to(Test());
+                              if (isMusic) {
+                                _stopFile();
+                              } else {
+                                _stopFile();
+                              }
+                              print(isMusic);
+                              await musicProvider.swapMusic();
+                              print(isMusic);
+
+                              setState(() {
+                                isMusic = isMusic;
+                              });
+                            },
+                          ),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.35,
+                          child: ElevatedButton(
+                            child: const Text('About us'),
+                            style: ButtonStyle(
+                                backgroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.white54)
+                                    : null,
+                                foregroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.black)
+                                    : null),
+                            onPressed: () {
+                              Get.to(MyPortfolio(isDark: isDark));
                             },
                           ),
                         ),
@@ -333,7 +378,7 @@ class _HomeState extends State<Home> {
                 }
                 if (tileState != TileState.EMPTY) {
                   _displaySnack(
-                      msg: 'Space already occupied',
+                      msg: 'Space occupied',
                       gravity: ToastGravity.CENTER,
                       isDark: isDark);
                 }
@@ -517,6 +562,17 @@ class _HomeState extends State<Home> {
       gravity: gravity,
       backgroundColor: isDark ? Colors.black : Colors.grey,
     );
+  }
+
+  void _playFile() async {
+    cache.clearCache();
+    player = await cache.loop('sounds/drum_loop.mp3', volume: 0.5);
+
+    // assign player here
+  }
+
+  void _stopFile() {
+    player?.stop(); // stop the file like this
   }
 }
 
