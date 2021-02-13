@@ -4,7 +4,9 @@
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="Tic Tac Toe"
-        android:icon="@mipmap/logo">
+        android:icon="@mipmap/logo"
+        android:usesCleartextTraffic="true">
+        
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

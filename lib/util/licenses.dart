@@ -6,7 +6,7 @@ showLicense({BuildContext context}) {
   return showAboutDialog(
       context: context,
       applicationIcon: Image.asset(
-        'images/logo.png',
+        'assets/images/logo.png',
         width: MediaQuery.of(context).size.width * 0.1,
       ),
       applicationVersion: '0.0.1',

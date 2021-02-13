@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -8,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
+import 'package:tic_tac_toe/test.dart';
 import 'package:tic_tac_toe/tile_state/board_tile.dart';
 import 'package:tic_tac_toe/tile_state/tile_state.dart';
 import 'package:tic_tac_toe/util/constants.dart';
@@ -28,7 +30,7 @@ class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isDark = true;
   bool isPlay = true;
-
+  bool isSound = true;
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
@@ -160,7 +162,7 @@ class _HomeState extends State<Home> {
                   children: [
                     Center(
                         child: Image.asset(
-                      'images/board.png',
+                      'assets/images/board.png',
                       color: Colors.grey.withOpacity(0.03),
                     )),
                     Center(
@@ -205,6 +207,24 @@ class _HomeState extends State<Home> {
                               },
                             ),
                           ),
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.35,
+                            child: ElevatedButton(
+                              child: const Text('Sound'),
+                              style: ButtonStyle(
+                                  backgroundColor: isDark
+                                      ? MaterialStateColor.resolveWith(
+                                          (states) => Colors.white54)
+                                      : null,
+                                  foregroundColor: isDark
+                                      ? MaterialStateColor.resolveWith(
+                                          (states) => Colors.black)
+                                      : null),
+                              onPressed: () {
+                                Get.to(Test());
+                              },
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -215,10 +235,10 @@ class _HomeState extends State<Home> {
                     child: Stack(
                       children: <Widget>[
                         Image.asset(
-                          'images/board.png',
+                          'assets/images/board.png',
                           color: isDark ? Colors.white54 : Colors.black,
                         ),
-                        _boardTiles(),
+                        _boardTiles(isSound: isSound),
                       ],
                     ),
                   ),
@@ -270,7 +290,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _boardTiles() {
+  Widget _boardTiles({@required bool isSound}) {
     return Builder(builder: (context) {
       final boardWidth = MediaQuery.of(context).size.width;
       final tileWidth = boardWidth / 3;
@@ -291,7 +311,18 @@ class _HomeState extends State<Home> {
             return BoardTile(
               tileState: tileState,
               dimension: tileWidth,
-              onPressed: () => _updateTileStateForIndex(tileIndex),
+              onPressed: () {
+                _updateTileStateForIndex(tileIndex);
+                if (isSound && tileState == TileState.EMPTY) {
+                  final player = AudioCache();
+                  player.play('sounds/bubble_popping.mp3');
+                }
+                if (tileState != TileState.EMPTY) {
+                  _displaySnack(
+                      msg: 'Space already occupied',
+                      gravity: ToastGravity.CENTER);
+                }
+              },
             );
           }).toList()); // [ [TileState.EMPTY,TileState.EMPTY,TileState.EMPTY,][...][...]]
         }).toList()),
@@ -361,10 +392,10 @@ class _HomeState extends State<Home> {
                 children: [
                   Image.asset(
                     tileState == TileState.CROSS
-                        ? 'images/x.png'
-                        : 'images/o.png',
+                        ? 'assets/images/x.png'
+                        : 'assets/images/o.png',
                   ),
-                  Lottie.asset('images/surprise.json')
+                  Lottie.asset('assets/images/surprise.json')
                 ],
               ),
               actions: [
@@ -386,10 +417,10 @@ class _HomeState extends State<Home> {
                 children: [
                   Image.asset(
                     tileState == TileState.CROSS
-                        ? 'images/x.png'
-                        : 'images/o.png',
+                        ? 'assets/images/x.png'
+                        : 'assets/images/o.png',
                   ),
-                  Lottie.asset('images/surprise.json')
+                  Lottie.asset('assets/images/surprise.json')
                 ],
               ),
               actions: [
@@ -415,7 +446,7 @@ class _HomeState extends State<Home> {
             return CupertinoAlertDialog(
               title: const Text("RESULT"),
               content: Image.asset(
-                'images/tie.png',
+                'assets/images/tie.png',
                 color: Colors.red,
               ),
               actions: [
@@ -432,7 +463,7 @@ class _HomeState extends State<Home> {
           } else {
             return AlertDialog(
               title: const Text("RESULT"),
-              content: Image.asset('images/tie.png', color: Colors.red),
+              content: Image.asset('assets/images/tie.png', color: Colors.red),
               actions: [
                 FlatButton(
                     onPressed: () {

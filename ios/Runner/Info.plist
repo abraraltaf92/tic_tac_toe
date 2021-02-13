@@ -42,10 +42,18 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<string>YES</string>
+	
 	<key>LSApplicationQueriesSchemes</key>
 <array>
         <string>itms</string>
 </array>
+<!-- for audio player -->
+<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+</dict>
+
 
 
 	</dict> 

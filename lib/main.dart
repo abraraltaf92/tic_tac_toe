@@ -84,7 +84,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                 children: [
                   Expanded(
                     child: Lottie.asset(
-                      'images/splashScreen.json',
+                      'assets/images/splashScreen.json',
                     ),
                   ),
                   SlideTransition(

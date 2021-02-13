@@ -38,6 +38,7 @@ dependencies:
   url_launcher: ^5.7.10
   share: ^0.6.5+4
   flutter_icons: ^1.1.0
+  audioplayers: ^0.17.3
 flutter_icons:
   android: false
   ios: true
@@ -61,7 +62,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/
+    - assets/images/
+    - assets/sounds/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
   # For details regarding adding assets from package dependencies, see

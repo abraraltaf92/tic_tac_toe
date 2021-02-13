@@ -29,12 +29,12 @@ class BoardTile extends StatelessWidget {
         break;
       case TileState.CROSS:
         widget = Image.asset(
-          'images/x.png',
+          'assets/images/x.png',
         );
         break;
       case TileState.CIRCLE:
         widget = Image.asset(
-          'images/o.png',
+          'assets/images/o.png',
         );
         break;
     }

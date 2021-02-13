@@ -23,7 +23,7 @@ class MyPortfolio extends StatelessWidget {
           children: [
             Center(
                 child: Image.asset(
-              'images/board.png',
+              'assets/images/board.png',
               color: Colors.grey.withOpacity(0.03),
             )),
             Container(
@@ -105,7 +105,7 @@ class MyPortfolio extends StatelessWidget {
                           throw 'Could not launch $url';
                         }
                       },
-                      child: Image.asset('images/bmc.png'),
+                      child: Image.asset('assets/images/bmc.png'),
                       style: ButtonStyle(
                           backgroundColor: isDark
                               ? MaterialStateColor.resolveWith(
