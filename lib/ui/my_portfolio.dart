@@ -2,15 +2,17 @@ import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:tic_tac_toe/util/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:tic_tac_toe/util/config.dart';
 
 class MyPortfolio extends StatelessWidget {
-  MyPortfolio({@required this.isDark});
+  MyPortfolio({@required this.isDark, @required this.isSound});
 
   final bool isDark;
+  final bool isSound;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,6 +56,9 @@ class MyPortfolio extends StatelessWidget {
                           overlayColor:
                               MaterialStateProperty.all(Colors.transparent)),
                       onPressed: () {
+                        if (isSound) {
+                          HapticFeedback.lightImpact();
+                        }
                         showDialog(
                             context: context,
                             builder: (_) {
@@ -66,9 +71,16 @@ class MyPortfolio extends StatelessWidget {
                                   actions: [
                                     FlatButton(
                                         onPressed: () {
+                                          if (isSound) {
+                                            HapticFeedback.lightImpact();
+                                          }
                                           Navigator.of(context).pop();
-                                          LaunchReview.launch(
-                                              writeReview: false);
+                                          try {
+                                            LaunchReview.launch(
+                                                writeReview: false);
+                                          } catch (e) {
+                                            print(e.toString());
+                                          }
                                         },
                                         child: const Text('OK'))
                                   ],
@@ -80,6 +92,9 @@ class MyPortfolio extends StatelessWidget {
                                   actions: [
                                     FlatButton(
                                         onPressed: () {
+                                          if (isSound) {
+                                            HapticFeedback.lightImpact();
+                                          }
                                           Navigator.of(context).pop();
                                           LaunchReview.launch();
                                         },
@@ -98,6 +113,9 @@ class MyPortfolio extends StatelessWidget {
                     width: MediaQuery.of(context).size.width * 0.5,
                     child: ElevatedButton(
                       onPressed: () async {
+                        if (isSound) {
+                          HapticFeedback.lightImpact();
+                        }
                         const url = buyMeACoffee;
                         if (await canLaunch(url)) {
                           await launch(url);

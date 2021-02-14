@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
+import 'package:tic_tac_toe/notifiers/haptics.dart';
 import 'package:tic_tac_toe/tile_state/board_tile.dart';
 import 'package:tic_tac_toe/tile_state/tile_state.dart';
 import 'package:tic_tac_toe/util/constants.dart';
@@ -35,7 +36,7 @@ class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isPlay = true;
   AudioCache cache = AudioCache(); // you have this
-  AudioPlayer player = AudioPlayer(playerId: 'abc');
+  AudioPlayer player = AudioPlayer();
   bool changeButton = false;
   @override
   Widget build(BuildContext context) {
@@ -43,11 +44,14 @@ class _HomeState extends State<Home> {
         Provider.of<ThemeProvider>(context, listen: false);
     SoundProvider soundProvider =
         Provider.of<SoundProvider>(context, listen: false);
+    HapticProvider hapticProvider =
+        Provider.of<HapticProvider>(context, listen: false);
     // MusicProvider musicProvider =
     //     Provider.of<MusicProvider>(context, listen: false);
 
     bool isDark = themeProvider.getTheme == ThemeData.dark();
     bool isSound = soundProvider.getSound;
+    bool isHaptic = hapticProvider.gethaptic;
     // bool isMusic = musicProvider.getMusic;
     // if (isMusic) {
     //   if (cache.fixedPlayer?.playerId != 'abc') _playFile();
@@ -62,6 +66,9 @@ class _HomeState extends State<Home> {
           actions: [
             IconButton(
               onPressed: () {
+                if (isHaptic) {
+                  HapticFeedback.mediumImpact();
+                }
                 themeProvider.swapTheme();
                 setState(() {
                   isDark = isDark;
@@ -89,6 +96,9 @@ class _HomeState extends State<Home> {
                   ),
                   ListTile(
                     onTap: () async {
+                      if (isHaptic) {
+                        HapticFeedback.lightImpact();
+                      }
                       const url = instaLink;
                       if (await canLaunch(url)) {
                         await launch(url);
@@ -106,6 +116,9 @@ class _HomeState extends State<Home> {
                   ),
                   ListTile(
                     onTap: () async {
+                      if (isHaptic) {
+                        HapticFeedback.lightImpact();
+                      }
                       const url = fbLink;
                       if (await canLaunch(url)) {
                         await launch(url);
@@ -124,6 +137,9 @@ class _HomeState extends State<Home> {
                   Divider(),
                   ListTile(
                     onTap: () async {
+                      if (isHaptic) {
+                        HapticFeedback.lightImpact();
+                      }
                       const url = myPortfolio;
                       if (await canLaunch(url)) {
                         await launch(url);
@@ -142,6 +158,9 @@ class _HomeState extends State<Home> {
                   Divider(),
                   ListTile(
                     onTap: () {
+                      if (isHaptic) {
+                        HapticFeedback.lightImpact();
+                      }
                       if (Platform.isAndroid) {
                         Share.share(googlePlayStoreLink,
                             subject: 'Share Tic Tac Toe');
@@ -158,7 +177,12 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   ListTile(
-                    onTap: () => showLicense(context: context),
+                    onTap: () {
+                      if (isHaptic) {
+                        HapticFeedback.lightImpact();
+                      }
+                      showLicense(context: context);
+                    },
                     // onPressed: null,
                     leading: const Icon(FontAwesome.info_circle),
                     title: const Text(
@@ -205,6 +229,9 @@ class _HomeState extends State<Home> {
                                         (states) => Colors.black)
                                     : null),
                             onPressed: () async {
+                              if (isHaptic) {
+                                HapticFeedback.lightImpact();
+                              }
                               setState(() {
                                 changeButton = !changeButton;
                               });
@@ -220,10 +247,10 @@ class _HomeState extends State<Home> {
                           child: ElevatedButton(
                             child: (isSound)
                                 ? Text(
-                                    'Sound effects: off',
+                                    'Sound Effects: off',
                                     textAlign: TextAlign.center,
                                   )
-                                : Text('Sound effects: on',
+                                : Text('Sound Effects: on',
                                     textAlign: TextAlign.center),
                             style: ButtonStyle(
                                 backgroundColor: isDark
@@ -241,6 +268,36 @@ class _HomeState extends State<Home> {
 
                               setState(() {
                                 isSound = isSound;
+                              });
+                            },
+                          ),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.35,
+                          child: ElevatedButton(
+                            child: (isHaptic)
+                                ? Text(
+                                    'Haptics: off',
+                                    textAlign: TextAlign.center,
+                                  )
+                                : Text('Haptics: on',
+                                    textAlign: TextAlign.center),
+                            style: ButtonStyle(
+                                backgroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.white54)
+                                    : null,
+                                foregroundColor: isDark
+                                    ? MaterialStateColor.resolveWith(
+                                        (states) => Colors.black)
+                                    : null),
+                            onPressed: () async {
+                              // Get.to(Test());
+
+                              await hapticProvider.swapHaptic();
+
+                              setState(() {
+                                isHaptic = isHaptic;
                               });
                             },
                           ),
@@ -298,7 +355,13 @@ class _HomeState extends State<Home> {
                                         (states) => Colors.black)
                                     : null),
                             onPressed: () {
-                              Get.to(MyPortfolio(isDark: isDark));
+                              if (isHaptic) {
+                                HapticFeedback.lightImpact();
+                              }
+                              Get.to(MyPortfolio(
+                                isDark: isDark,
+                                isSound: isSound,
+                              ));
                             },
                           ),
                         ),
@@ -315,15 +378,17 @@ class _HomeState extends State<Home> {
                         'assets/images/board.png',
                         color: isDark ? Colors.white54 : Colors.black,
                       ),
-                      _boardTiles(isSound: isSound, isDark: isDark),
+                      _boardTiles(
+                          isSound: isSound, isDark: isDark, isHaptic: isHaptic),
                     ],
                   ),
                 ),
               ),
-        floatingActionButton: isPlay ? null : _speedDial(isDark: isDark));
+        floatingActionButton:
+            isPlay ? null : _speedDial(isDark: isDark, isHaptic: isHaptic));
   }
 
-  Widget _speedDial({@required bool isDark}) {
+  Widget _speedDial({@required bool isDark, @required bool isHaptic}) {
     return SpeedDial(
       animatedIcon: AnimatedIcons.view_list,
       animatedIconTheme: IconThemeData(size: 25),
@@ -337,6 +402,9 @@ class _HomeState extends State<Home> {
             child: const Icon(Icons.replay_outlined),
             backgroundColor: Colors.white54,
             onTap: () {
+              if (isHaptic) {
+                HapticFeedback.lightImpact();
+              }
               _resetGame();
               _displaySnack(msg: 'Game Restarted', isDark: isDark);
             },
@@ -351,6 +419,9 @@ class _HomeState extends State<Home> {
             child: const Icon(Icons.close),
             backgroundColor: Colors.white54,
             onTap: () {
+              if (isHaptic) {
+                HapticFeedback.lightImpact();
+              }
               _resetGame();
               setState(() {
                 isPlay = !isPlay;
@@ -367,7 +438,10 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _boardTiles({@required bool isSound, @required bool isDark}) {
+  Widget _boardTiles(
+      {@required bool isSound,
+      @required bool isDark,
+      @required bool isHaptic}) {
     return Builder(builder: (context) {
       final boardWidth = MediaQuery.of(context).size.width;
       final tileWidth = boardWidth / 3;
@@ -389,11 +463,14 @@ class _HomeState extends State<Home> {
               tileState: tileState,
               dimension: tileWidth,
               onPressed: () {
+                if (isHaptic) {
+                  HapticFeedback.lightImpact();
+                }
                 _updateTileStateForIndex(tileIndex, isDark);
                 if (isSound && tileState == TileState.EMPTY) {
-                  // final player = AudioCache();
-                  // player.play('sounds/bubble_popping.mp3');
-                  HapticFeedback.vibrate();
+                  final player = AudioCache();
+                  player.play('sounds/bubble_popping.mp3');
+
                   // SystemSound.play(SystemSoundType.click);
                 }
                 if (tileState != TileState.EMPTY) {

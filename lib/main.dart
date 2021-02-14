@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tic_tac_toe/notifiers/haptics.dart';
 import 'package:tic_tac_toe/ui/home.dart';
 import 'package:tic_tac_toe/notifiers/music.dart';
 import 'package:tic_tac_toe/notifiers/sound.dart';
@@ -28,6 +29,9 @@ Future<void> main() async {
       ChangeNotifierProvider(
           create: (BuildContext context) =>
               SoundProvider(isSound: prefs.getBool('isSound') ?? true)),
+      ChangeNotifierProvider(
+          create: (BuildContext context) =>
+              HapticProvider(isHaptic: prefs.getBool('isHaptic') ?? true)),
       ChangeNotifierProvider(
           create: (BuildContext context) => MusicProvider(
                 isMusic: prefs.getBool('isMusic') ?? false,
@@ -80,8 +84,10 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<ThemeProvider, SoundProvider, MusicProvider>(
-        builder: (context, themeProvider, soundProvider, musicProvider, child) {
+    return Consumer4<ThemeProvider, SoundProvider, MusicProvider,
+            HapticProvider>(
+        builder: (context, themeProvider, soundProvider, musicProvider,
+            hapticProvider, child) {
       return GetMaterialApp(
         navigatorKey: navigatorkey,
         title: 'Tic Tac Toe',
