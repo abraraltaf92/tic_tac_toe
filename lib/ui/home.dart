@@ -3,6 +3,7 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 // import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -16,7 +17,7 @@ import 'package:tic_tac_toe/tile_state/tile_state.dart';
 import 'package:tic_tac_toe/util/constants.dart';
 import 'package:tic_tac_toe/ui/my_portfolio.dart';
 import 'package:tic_tac_toe/util/licenses.dart';
-import 'package:tic_tac_toe/notifiers/music.dart';
+// import 'package:tic_tac_toe/notifiers/music.dart';
 import 'package:tic_tac_toe/notifiers/sound.dart';
 import 'package:tic_tac_toe/notifiers/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -34,20 +35,25 @@ class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isPlay = true;
   AudioCache cache = AudioCache(); // you have this
-  AudioPlayer player = AudioPlayer(); //
+  AudioPlayer player = AudioPlayer(playerId: 'abc');
+  bool changeButton = false;
   @override
   Widget build(BuildContext context) {
     ThemeProvider themeProvider =
         Provider.of<ThemeProvider>(context, listen: false);
     SoundProvider soundProvider =
         Provider.of<SoundProvider>(context, listen: false);
-    MusicProvider musicProvider =
-        Provider.of<MusicProvider>(context, listen: false);
+    // MusicProvider musicProvider =
+    //     Provider.of<MusicProvider>(context, listen: false);
 
     bool isDark = themeProvider.getTheme == ThemeData.dark();
     bool isSound = soundProvider.getSound;
-    bool isMusic = musicProvider.getMusic;
-
+    // bool isMusic = musicProvider.getMusic;
+    // if (isMusic) {
+    //   if (cache.fixedPlayer?.playerId != 'abc') _playFile();
+    // } else {
+    //   _stopFile();
+    // }
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -180,10 +186,15 @@ class _HomeState extends State<Home> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.35,
+                        AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                          width: changeButton
+                              ? MediaQuery.of(context).size.width * 0.35 / 3
+                              : MediaQuery.of(context).size.width * 0.35,
                           child: ElevatedButton(
-                            child: const Text('Let\'s play'),
+                            child: changeButton
+                                ? Icon(FontAwesome.angellist)
+                                : Text('Let\'s play'),
                             style: ButtonStyle(
                                 backgroundColor: isDark
                                     ? MaterialStateColor.resolveWith(
@@ -193,7 +204,11 @@ class _HomeState extends State<Home> {
                                     ? MaterialStateColor.resolveWith(
                                         (states) => Colors.black)
                                     : null),
-                            onPressed: () {
+                            onPressed: () async {
+                              setState(() {
+                                changeButton = !changeButton;
+                              });
+                              await Future.delayed(Duration(milliseconds: 320));
                               setState(() {
                                 isPlay = !isPlay;
                               });
@@ -233,13 +248,17 @@ class _HomeState extends State<Home> {
                         Container(
                           width: MediaQuery.of(context).size.width * 0.35,
                           child: ElevatedButton(
-                            child: (isMusic)
-                                ? Text(
-                                    'Music: off',
-                                    textAlign: TextAlign.center,
-                                  )
-                                : Text('Music: on',
-                                    textAlign: TextAlign.center),
+                            // child: (isMusic)
+                            //     ? Text(
+                            //         'Music: off',
+                            //         textAlign: TextAlign.center,
+                            //       )
+                            //     : Text('Music: on',
+                            //         textAlign: TextAlign.center),
+                            child: Text(
+                              'Music: on',
+                              textAlign: TextAlign.center,
+                            ),
                             style: ButtonStyle(
                                 backgroundColor: isDark
                                     ? MaterialStateColor.resolveWith(
@@ -251,18 +270,17 @@ class _HomeState extends State<Home> {
                                     : null),
                             onPressed: () async {
                               // Get.to(Test());
-                              if (isMusic) {
-                                _stopFile();
-                              } else {
-                                _stopFile();
-                              }
-                              print(isMusic);
-                              await musicProvider.swapMusic();
-                              print(isMusic);
 
-                              setState(() {
-                                isMusic = isMusic;
-                              });
+                              // await musicProvider.swapMusic();
+                              // print(isMusic);
+
+                              // setState(() {
+                              //   isMusic = !isMusic;
+                              // });
+                              _displaySnack(
+                                  msg: 'Work in progress...',
+                                  isDark: isDark,
+                                  gravity: ToastGravity.CENTER);
                             },
                           ),
                         ),
@@ -336,6 +354,7 @@ class _HomeState extends State<Home> {
               _resetGame();
               setState(() {
                 isPlay = !isPlay;
+                changeButton = !changeButton;
               });
             },
             label: 'Quit',
@@ -372,8 +391,9 @@ class _HomeState extends State<Home> {
               onPressed: () {
                 _updateTileStateForIndex(tileIndex, isDark);
                 if (isSound && tileState == TileState.EMPTY) {
-                  final player = AudioCache();
-                  player.play('sounds/bubble_popping.mp3');
+                  // final player = AudioCache();
+                  // player.play('sounds/bubble_popping.mp3');
+                  HapticFeedback.vibrate();
                   // SystemSound.play(SystemSoundType.click);
                 }
                 if (tileState != TileState.EMPTY) {
@@ -565,8 +585,10 @@ class _HomeState extends State<Home> {
   }
 
   void _playFile() async {
-    cache.clearCache();
-    player = await cache.loop('sounds/drum_loop.mp3', volume: 0.5);
+    player = await cache.loop(
+      'sounds/drum_loop.mp3',
+      volume: 0.5,
+    );
 
     // assign player here
   }
