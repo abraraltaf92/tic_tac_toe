@@ -1,39 +1,48 @@
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MusicProvider extends ChangeNotifier {
   bool _selectedMusic;
-  AudioCache cache = AudioCache();
   AudioPlayer player = AudioPlayer();
-  MusicProvider({bool isMusic}) {
+
+  MusicProvider({@required bool isMusic}) {
     _selectedMusic = isMusic;
-    // if (isMusic) {
-    //   _playFile();
-    // } else {
-    //   _stopFile();
-    // }
+    print(isMusic);
+
+    SharedPreferences.getInstance().then((prefs) {
+      bool isMusic = prefs.getBool('isMusic') ?? false;
+      print(isMusic);
+      if (isMusic) {
+        playFile();
+      } else {
+        stopFile();
+      }
+    });
   }
   Future<void> swapMusic() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (_selectedMusic == true) {
-      _selectedMusic = false;
-      prefs.setBool('isMusic', false);
-    } else {
-      _selectedMusic = true;
-      prefs.setBool('isMusic', true);
-    }
+    // if (_selectedMusic == true) {
+    //   _selectedMusic = false;
+    //   prefs.setBool('isMusic', false);
+    // } else {
+    //   _selectedMusic = true;
+    //   prefs.setBool('isMusic', true);
+    // }
+    prefs.setBool('isMusic', player.playerState.playing);
     notifyListeners();
   }
 
   bool get getMusic => _selectedMusic ?? false;
 
-  // void _playFile() async {
-  //   player = await cache.loop('sounds/drum_loop.mp3'); // assign player here
-  // }
+  void playFile() async {
+    // if (!player.playerState.playing) {
+    await player.setAsset('assets/sounds/drum_loop.mp3');
+    player.play();
+    // }
+  }
 
-  // void _stopFile() {
-  //   player?.stop(); // stop the file like this
-  // }
+  void stopFile() {
+    player.stop();
+  }
 }

@@ -11,13 +11,13 @@ class HapticProvider extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (_selectedHaptic == true) {
       _selectedHaptic = false;
-      prefs.setBool('isSound', false);
+      prefs.setBool('isHaptic', false);
     } else {
       _selectedHaptic = true;
-      prefs.setBool('isSound', true);
+      prefs.setBool('isHaptic', true);
     }
     notifyListeners();
   }
 
-  bool get gethaptic => _selectedHaptic;
+  bool get gethaptic => _selectedHaptic ?? false;
 }

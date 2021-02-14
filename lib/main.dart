@@ -23,17 +23,17 @@ Future<void> main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
-        create: (BuildContext context) =>
+        create: (_) =>
             ThemeProvider(isDarkMode: prefs.getBool('isDarkTheme') ?? true),
       ),
       ChangeNotifierProvider(
-          create: (BuildContext context) =>
+          create: (_) =>
               SoundProvider(isSound: prefs.getBool('isSound') ?? true)),
       ChangeNotifierProvider(
-          create: (BuildContext context) =>
-              HapticProvider(isHaptic: prefs.getBool('isHaptic') ?? true)),
+          create: (_) =>
+              HapticProvider(isHaptic: prefs.getBool('isHaptic') ?? false)),
       ChangeNotifierProvider(
-          create: (BuildContext context) => MusicProvider(
+          create: (_) => MusicProvider(
                 isMusic: prefs.getBool('isMusic') ?? false,
               )),
     ],
@@ -84,10 +84,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer4<ThemeProvider, SoundProvider, MusicProvider,
-            HapticProvider>(
-        builder: (context, themeProvider, soundProvider, musicProvider,
-            hapticProvider, child) {
+    return Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
       return GetMaterialApp(
         navigatorKey: navigatorkey,
         title: 'Tic Tac Toe',

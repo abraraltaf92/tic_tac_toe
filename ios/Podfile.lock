@@ -1,11 +1,13 @@
 PODS:
-  - audioplayers (0.0.1):
+  - audio_session (0.0.1):
     - Flutter
   - Flutter (1.0.0)
   - fluttertoast (0.0.2):
     - Flutter
     - Toast
   - integration_test (0.0.1):
+    - Flutter
+  - just_audio (0.0.1):
     - Flutter
   - launch_review (0.0.1):
     - Flutter
@@ -20,10 +22,11 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - audioplayers (from `.symlinks/plugins/audioplayers/ios`)
+  - audio_session (from `.symlinks/plugins/audio_session/ios`)
   - Flutter (from `Flutter`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - just_audio (from `.symlinks/plugins/just_audio/ios`)
   - launch_review (from `.symlinks/plugins/launch_review/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - share (from `.symlinks/plugins/share/ios`)
@@ -35,14 +38,16 @@ SPEC REPOS:
     - Toast
 
 EXTERNAL SOURCES:
-  audioplayers:
-    :path: ".symlinks/plugins/audioplayers/ios"
+  audio_session:
+    :path: ".symlinks/plugins/audio_session/ios"
   Flutter:
     :path: Flutter
   fluttertoast:
     :path: ".symlinks/plugins/fluttertoast/ios"
   integration_test:
     :path: ".symlinks/plugins/integration_test/ios"
+  just_audio:
+    :path: ".symlinks/plugins/just_audio/ios"
   launch_review:
     :path: ".symlinks/plugins/launch_review/ios"
   path_provider:
@@ -55,10 +60,11 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher/ios"
 
 SPEC CHECKSUMS:
-  audioplayers: 455322b54050b30ea4b1af7cd9e9d105f74efa8c
+  audio_session: 4f3e461722055d21515cf3261b64c973c062f345
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
   fluttertoast: 6122fa75143e992b1d3470f61000f591a798cc58
   integration_test: 5ed24a436eb7ec17b6a13046e9bf7ca4a404e59e
+  just_audio: baa7252489dbcf47a4c7cc9ca663e9661c99aafa
   launch_review: 75d5a956ba8eaa493e9c9d4bf4c05e505e8d5ed0
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   share: 0b2c3e82132f5888bccca3351c504d0003b3b410
