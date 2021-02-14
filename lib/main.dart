@@ -47,8 +47,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
-  final navigatorkey = GlobalKey<NavigatorState>();
-  final _materialKey = GlobalKey<ScaffoldState>();
   AnimationController _controller;
   Animation<Offset> _offsetAnimation;
   Animation<double> _fadeAnimation;
@@ -86,75 +84,83 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
       return GetMaterialApp(
-        navigatorKey: navigatorkey,
         title: 'Tic Tac Toe',
         theme: themeProvider.getTheme,
         debugShowCheckedModeBanner: false,
-        home: Align(
-          key: _materialKey,
-          alignment: Alignment.topCenter,
-          child: AnimatedSplashScreen(
-            duration: 3,
-            backgroundColor: themeProvider.getTheme.backgroundColor,
-            nextScreen: Home(),
-            splashTransition: SplashTransition.scaleTransition,
-            splash: Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Lottie.asset(
-                      'assets/images/splashScreen.json',
-                    ),
-                  ),
-                  SlideTransition(
-                    position: _offsetAnimation,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 4),
-                      child: AutoSizeText(
-                        'HI THERE, I\'M',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                  FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        TypewriterAnimatedTextKit(
-                          text: ['Abrar', 'Altaf'],
-                          totalRepeatCount: 1,
-                          speed: Duration(milliseconds: 350),
-                          textStyle: TextStyle(
-                            color: Theme.of(context).accentColor,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 4.0),
-                          child: AutoSizeText(
-                            'developer of the app',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-            splashIconSize: 250,
-          ),
-        ),
+        home: animatedSplashScreen(themeProvider: themeProvider),
       );
     });
+  }
+
+  AnimatedSplashScreen animatedSplashScreen(
+      {@required ThemeProvider themeProvider}) {
+    return AnimatedSplashScreen(
+      duration: 3,
+      backgroundColor: themeProvider.getTheme.backgroundColor,
+      nextScreen: Home(),
+      splashTransition: SplashTransition.scaleTransition,
+      splash: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Lottie.asset(
+                'assets/images/splashScreen.json',
+              ),
+            ),
+            slideTransition(),
+            fadeTransition()
+          ],
+        ),
+      ),
+      splashIconSize: 250,
+    );
+  }
+
+  SlideTransition slideTransition() {
+    return SlideTransition(
+      position: _offsetAnimation,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 4),
+        child: AutoSizeText(
+          'HI THERE, I\'M',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+  }
+
+  FadeTransition fadeTransition() {
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          TypewriterAnimatedTextKit(
+            text: ['Abrar', 'Altaf'],
+            totalRepeatCount: 1,
+            speed: Duration(milliseconds: 350),
+            textStyle: TextStyle(
+              color: Theme.of(context).accentColor,
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 4.0),
+            child: AutoSizeText(
+              'developer of the app',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

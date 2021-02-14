@@ -15,31 +15,35 @@ class MusicProvider extends ChangeNotifier {
       print(isMusic);
       if (isMusic) {
         playFile();
-      } else {
-        stopFile();
       }
     });
   }
   Future<void> swapMusic() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    // if (_selectedMusic == true) {
-    //   _selectedMusic = false;
-    //   prefs.setBool('isMusic', false);
-    // } else {
-    //   _selectedMusic = true;
-    //   prefs.setBool('isMusic', true);
-    // }
-    prefs.setBool('isMusic', player.playerState.playing);
+    if (_selectedMusic == true) {
+      _selectedMusic = false;
+      prefs.setBool('isMusic', false);
+    } else {
+      _selectedMusic = true;
+      prefs.setBool('isMusic', true);
+    }
+    // prefs.setBool('isMusic', player.playerState.playing);
     notifyListeners();
   }
 
   bool get getMusic => _selectedMusic ?? false;
 
   void playFile() async {
-    // if (!player.playerState.playing) {
-    await player.setAsset('assets/sounds/drum_loop.mp3');
-    player.play();
-    // }
+    if (!player.playing) {
+      await player.setAsset('assets/sounds/house_party.mp3');
+      player.setVolume(0.1);
+      player.setSpeed(1.5);
+
+      player.setLoopMode(LoopMode.all);
+      player.play();
+    } else {
+      player.stop();
+    }
   }
 
   void stopFile() {

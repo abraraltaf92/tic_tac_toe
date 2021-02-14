@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,7 +8,7 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:just_audio/just_audio.dart';
+
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
@@ -33,12 +34,22 @@ class _HomeState extends State<Home> {
   int countDraw = 0;
   bool isPlay = true;
   bool changeButton = false;
-  AudioPlayer player = AudioPlayer();
+  static AudioCache player =
+      AudioCache(prefix: 'assets/sounds/', respectSilence: false);
+  @override
+  void initState() {
+    player.load('bubble_popping.mp3');
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    player.clearCache();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // bool isDark = themeProvider.getTheme == ThemeData.dark();
-
     return Consumer4<ThemeProvider, SoundProvider, HapticProvider,
             MusicProvider>(
         builder: (context, themeProvider, soundProvider, hapticProvider,
@@ -50,22 +61,17 @@ class _HomeState extends State<Home> {
       bool isDark = themeProvider.getTheme == ThemeData.dark();
       bool isSound = soundProvider.getSound;
       bool isHaptic = hapticProvider.gethaptic;
-      xbool isMusic = musicProvider.getMusic;
+      bool isMusic = musicProvider.getMusic;
+
       return Scaffold(
         appBar: AppBar(
           title: const Text('Tic Tac Toe'),
           centerTitle: true,
           actions: [
-            IconButton(
-              onPressed: () {
-                if (isHaptic) {
-                  HapticFeedback.mediumImpact();
-                }
-                themeProvider.swapTheme();
-              },
-              icon: Icon(isDark ? (Icons.lightbulb) : Icons.lightbulb_outline),
-              color: isDark ? Colors.yellow : null,
-            ),
+            _bulbIconButton(
+                themeProvider: themeProvider,
+                isDark: isDark,
+                isHaptic: isHaptic),
           ],
         ),
         drawer: Drawer(
@@ -109,9 +115,18 @@ class _HomeState extends State<Home> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         _letsPlay(isDark: isDark, isHaptic: isHaptic),
-                        _soundEffects(isDark: isDark),
-                        _hapticFeedback(isDark: isDark),
-                        _musicEffects(isDark: isDark),
+                        _soundEffects(
+                            isDark: isDark,
+                            soundProvider: soundProvider,
+                            isSound: isSound),
+                        _hapticFeedback(
+                            isDark: isDark,
+                            hapticProvider: hapticProvider,
+                            isHaptic: isHaptic),
+                        _musicEffects(
+                            isDark: isDark,
+                            musicProvider: musicProvider,
+                            isMusic: isMusic),
                         _aboutMe(
                             isDark: isDark,
                             isSound: isSound,
@@ -140,6 +155,25 @@ class _HomeState extends State<Home> {
       );
     });
   }
+
+  // AppBar
+  IconButton _bulbIconButton(
+      {@required bool isHaptic,
+      @required ThemeProvider themeProvider,
+      @required bool isDark}) {
+    return IconButton(
+      onPressed: () {
+        if (isHaptic) {
+          HapticFeedback.mediumImpact();
+        }
+        themeProvider.swapTheme();
+      },
+      icon: Icon(isDark ? (Icons.lightbulb) : Icons.lightbulb_outline),
+      color: isDark ? Colors.yellow : null,
+    );
+  }
+
+  // Drawer
 
   ListTile _instagramTile({@required bool isHaptic}) {
     return ListTile(
@@ -251,6 +285,7 @@ class _HomeState extends State<Home> {
     );
   }
 
+  // Home Widgets
   AnimatedContainer _letsPlay(
       {@required bool isDark, @required bool isHaptic}) {
     return AnimatedContainer(
@@ -283,15 +318,14 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Container _soundEffects({@required bool isDark}) {
+  Container _soundEffects(
+      {@required bool isDark,
+      @required bool isSound,
+      @required SoundProvider soundProvider}) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.35,
-      child: Consumer<SoundProvider>(builder: (context, soundProvider, child) {
-        SoundProvider _soundProvider =
-            Provider.of<SoundProvider>(context, listen: false);
-        bool _isSound = _soundProvider.getSound;
-        return ElevatedButton(
-          child: (_isSound)
+        width: MediaQuery.of(context).size.width * 0.35,
+        child: ElevatedButton(
+          child: (isSound)
               ? Text(
                   'Sound Effects: off',
                   textAlign: TextAlign.center,
@@ -307,21 +341,17 @@ class _HomeState extends State<Home> {
           onPressed: () async {
             await soundProvider.swapSound();
           },
-        );
-      }),
-    );
+        ));
   }
 
-  Container _hapticFeedback({@required bool isDark}) {
+  Container _hapticFeedback(
+      {@required bool isDark,
+      @required bool isHaptic,
+      @required HapticProvider hapticProvider}) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.35,
-      child:
-          Consumer<HapticProvider>(builder: (context, hapticProvider, child) {
-        HapticProvider _hapticProvider =
-            Provider.of<HapticProvider>(context, listen: false);
-        bool _isHaptic = _hapticProvider.gethaptic;
-        return ElevatedButton(
-          child: (_isHaptic)
+        width: MediaQuery.of(context).size.width * 0.35,
+        child: ElevatedButton(
+          child: (isHaptic)
               ? Text(
                   'Haptics: off',
                   textAlign: TextAlign.center,
@@ -335,59 +365,51 @@ class _HomeState extends State<Home> {
                   ? MaterialStateColor.resolveWith((states) => Colors.black)
                   : null),
           onPressed: () async {
-            await _hapticProvider.swapHaptic();
+            await hapticProvider.swapHaptic();
           },
-        );
-      }),
-    );
+        ));
   }
 
-  Container _musicEffects({@required bool isDark}) {
+  Container _musicEffects(
+      {@required bool isDark,
+      @required bool isMusic,
+      @required MusicProvider musicProvider}) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.35,
-      child: Consumer<MusicProvider>(
-        builder: (context, musicProvider, child) {
-          MusicProvider musicProvider =
-              Provider.of<MusicProvider>(context, listen: false);
-          bool isMusic = musicProvider.getMusic;
-          return ElevatedButton(
-            child: (isMusic)
-                ? Text(
-                    'Music: off',
-                    textAlign: TextAlign.center,
-                  )
-                : Text('Music: on', textAlign: TextAlign.center),
-            // child: Text(
-            //   'Music: on',
-            //   textAlign: TextAlign.center,
-            // ),
-            style: ButtonStyle(
-                backgroundColor: isDark
-                    ? MaterialStateColor.resolveWith((states) => Colors.white54)
-                    : null,
-                foregroundColor: isDark
-                    ? MaterialStateColor.resolveWith((states) => Colors.black)
-                    : null),
-            onPressed: () async {
-              // Get.to(Test());
-              print(isMusic);
-              // TODO : if there is current song going , no play again
-              if (isMusic) {
-                musicProvider.playFile();
-              } else {
-                musicProvider.stopFile();
-              }
-              await musicProvider.swapMusic();
+        width: MediaQuery.of(context).size.width * 0.35,
+        child: ElevatedButton(
+          child: (isMusic)
+              ? Text(
+                  'Music: off',
+                  textAlign: TextAlign.center,
+                )
+              : Text('Music: on', textAlign: TextAlign.center),
+          // child: Text(
+          //   'Music: on',
+          //   textAlign: TextAlign.center,
+          // ),
+          style: ButtonStyle(
+              backgroundColor: isDark
+                  ? MaterialStateColor.resolveWith((states) => Colors.white54)
+                  : null,
+              foregroundColor: isDark
+                  ? MaterialStateColor.resolveWith((states) => Colors.black)
+                  : null),
+          onPressed: () async {
+            // Get.to(Test());
 
-              // _displaySnack(
-              //     msg: 'Work in progress...',
-              //     isDark: isDark,
-              //     gravity: ToastGravity.CENTER);
-            },
-          );
-        },
-      ),
-    );
+            if (!isMusic) {
+              musicProvider.playFile();
+            } else {
+              musicProvider.stopFile();
+            }
+            await musicProvider.swapMusic();
+
+            // _displaySnack(
+            //     msg: 'Work in progress...',
+            //     isDark: isDark,
+            //     gravity: ToastGravity.CENTER);
+          },
+        ));
   }
 
   Container _aboutMe(
@@ -492,16 +514,13 @@ class _HomeState extends State<Home> {
             return BoardTile(
               tileState: tileState,
               dimension: tileWidth,
-              onPressed: () {
+              onPressed: () async {
                 if (isHaptic) {
                   HapticFeedback.lightImpact();
                 }
                 _updateTileStateForIndex(tileIndex, isDark);
                 if (isSound && tileState == TileState.EMPTY) {
-                  // TODO : figure out
-                  // player.play('sounds/bubble_popping.mp3');
-
-                  // SystemSound.play(SystemSoundType.click);
+                  player.play('bubble_popping.mp3');
                 }
                 if (tileState != TileState.EMPTY) {
                   _displaySnack(
@@ -517,6 +536,7 @@ class _HomeState extends State<Home> {
     });
   }
 
+  // Game Logic
   void _updateTileStateForIndex(int selectedIndex, bool isDark) {
     if (_boardState[selectedIndex] == TileState.EMPTY) {
       setState(() {
@@ -690,17 +710,6 @@ class _HomeState extends State<Home> {
       backgroundColor: isDark ? Colors.black : Colors.grey,
     );
   }
-
-  // void _playFile() async {
-  //   if (!player.playerState.playing) {
-  //     await player.setAsset('assets/sounds/drum_loop.mp3');
-  //     player.play();
-  //   }
-  // }
-
-  // void _stopFile() {
-  //   player.stop();
-  // }
 }
 
 //
