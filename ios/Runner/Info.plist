@@ -25,6 +25,7 @@
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
+	
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
@@ -42,7 +43,8 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<string>YES</string>
-	
+	<key>NSMotionUsageDescription</key>
+	<string>To experience haptic feedback</string>
 	<key>LSApplicationQueriesSchemes</key>
 <array>
         <string>itms</string>

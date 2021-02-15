@@ -30,8 +30,9 @@ Future<void> main() async {
           create: (_) =>
               SoundProvider(isSound: prefs.getBool('isSound') ?? true)),
       ChangeNotifierProvider(
-          create: (_) =>
-              HapticProvider(isHaptic: prefs.getBool('isHaptic') ?? false)),
+          create: (_) => HapticProvider(
+              isHaptic: prefs.getBool('isHaptic') ?? false,
+              isHapticPemission: prefs.getBool('isHapticPermission') ?? true)),
       ChangeNotifierProvider(
           create: (_) => MusicProvider(
                 isMusic: prefs.getBool('isMusic') ?? false,

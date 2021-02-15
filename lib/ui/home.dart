@@ -10,6 +10,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 import 'package:lottie/lottie.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:tic_tac_toe/notifiers/haptics.dart';
@@ -38,7 +39,7 @@ class _HomeState extends State<Home> {
       AudioCache(prefix: 'assets/sounds/', respectSilence: false);
   @override
   void initState() {
-    player.load('bubble_popping.mp3');
+    player.loadAll(['bubble_popping.mp3', 'win.mp3', 'draw.mp3', 'whoosh.mp3']);
     super.initState();
   }
 
@@ -62,7 +63,7 @@ class _HomeState extends State<Home> {
       bool isSound = soundProvider.getSound;
       bool isHaptic = hapticProvider.gethaptic;
       bool isMusic = musicProvider.getMusic;
-
+      bool isHapticPermission = hapticProvider.getHapticPermisiion;
       return Scaffold(
         appBar: AppBar(
           title: const Text('Tic Tac Toe'),
@@ -123,7 +124,8 @@ class _HomeState extends State<Home> {
                         _hapticFeedback(
                             isDark: isDark,
                             hapticProvider: hapticProvider,
-                            isHaptic: isHaptic),
+                            isHaptic: isHaptic,
+                            isHapticPermission: isHapticPermission),
                         _musicEffects(
                             isDark: isDark,
                             musicProvider: musicProvider,
@@ -297,7 +299,7 @@ class _HomeState extends State<Home> {
       duration: Duration(milliseconds: 300),
       width: changeButton
           ? MediaQuery.of(context).size.width * 0.35 / 3
-          : MediaQuery.of(context).size.width * 0.35,
+          : MediaQuery.of(context).size.width * 0.5,
       child: ElevatedButton(
         child: changeButton ? Icon(FontAwesome.angellist) : Text('Let\'s play'),
         style: ButtonStyle(
@@ -328,7 +330,7 @@ class _HomeState extends State<Home> {
       @required bool isSound,
       @required SoundProvider soundProvider}) {
     return Container(
-        width: MediaQuery.of(context).size.width * 0.35,
+        width: MediaQuery.of(context).size.width * 0.5,
         child: ElevatedButton(
           child: (isSound)
               ? Text(
@@ -352,9 +354,10 @@ class _HomeState extends State<Home> {
   Container _hapticFeedback(
       {@required bool isDark,
       @required bool isHaptic,
+      @required bool isHapticPermission,
       @required HapticProvider hapticProvider}) {
     return Container(
-        width: MediaQuery.of(context).size.width * 0.35,
+        width: MediaQuery.of(context).size.width * 0.5,
         child: ElevatedButton(
           child: (isHaptic)
               ? Text(
@@ -371,6 +374,88 @@ class _HomeState extends State<Home> {
                   : null),
           onPressed: () async {
             await hapticProvider.swapHaptic();
+
+            if (isHapticPermission) {
+              if (Platform.isIOS) {
+                showCupertinoDialog(
+                    context: context,
+                    builder: (_) {
+                      return CupertinoAlertDialog(
+                        title: const Text(
+                          'Alert',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                        content: Container(
+                            child: Column(children: <Widget>[
+                          Text('Turn on System Haptics on your Iphone'),
+                          Divider(
+                            color: Colors.transparent,
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                'Follow : ',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              Expanded(
+                                child: Text(
+                                    'Settings > Sounds & Haptics > System Haptics'),
+                              )
+                            ],
+                          ),
+                        ])),
+                        actions: [
+                          FlatButton(
+                              onPressed: () async {
+                                Navigator.of(context).pop();
+                                await hapticProvider.swapPermission();
+                              },
+                              child: const Text('OK'))
+                        ],
+                      );
+                    });
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (_) {
+                      return AlertDialog(
+                        title: const Text(
+                          'Alert',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                        content: Container(
+                            child: Column(children: <Widget>[
+                          Text('Turn on System Haptics on your Iphone'),
+                          Divider(
+                            color: Colors.transparent,
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                'Follow : ',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              Expanded(
+                                child: Text(
+                                    'Settings > Sound & Vibrate > Vibrate on touch'),
+                              )
+                            ],
+                          ),
+                        ])),
+                        actions: [
+                          FlatButton(
+                              onPressed: () async {
+                                Navigator.of(context).pop();
+                                await hapticProvider.swapPermission();
+                              },
+                              child: const Text('OK'))
+                        ],
+                      );
+                    });
+              }
+            }
           },
         ));
   }
@@ -380,7 +465,7 @@ class _HomeState extends State<Home> {
       @required bool isMusic,
       @required MusicProvider musicProvider}) {
     return Container(
-        width: MediaQuery.of(context).size.width * 0.35,
+        width: MediaQuery.of(context).size.width * 0.5,
         child: ElevatedButton(
           child: (isMusic)
               ? Text(
@@ -422,7 +507,7 @@ class _HomeState extends State<Home> {
       @required bool isHaptic,
       @required bool isSound}) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.35,
+      width: MediaQuery.of(context).size.width * 0.5,
       child: ElevatedButton(
         child: const Text('About us'),
         style: ButtonStyle(
