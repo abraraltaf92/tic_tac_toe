@@ -38,7 +38,6 @@ class MusicProvider extends ChangeNotifier {
     if (!player.playing) {
       await player.setAsset('assets/sounds/house_party.mp3');
       player.setSpeed(1.5);
-
       player.setLoopMode(LoopMode.all);
       player.play();
       handleInterruptions();

@@ -473,28 +473,35 @@ class _HomeState extends State<Home> {
                       return AlertDialog(
                         title: const Text(
                           'Alert',
+                          // textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.red),
                         ),
                         content: Container(
-                            child: Column(children: <Widget>[
-                          Text('Turn on Haptic Feedback on your device'),
-                          Divider(
-                            color: Colors.transparent,
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                'Follow : ',
-                                textAlign: TextAlign.start,
-                                style: TextStyle(color: Colors.red),
+                            height: MediaQuery.of(context).size.height * 0.25,
+                            alignment: Alignment.center,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                      'Turn on Haptic Feedback on your device'),
+                                  Divider(
+                                    color: Colors.transparent,
+                                  ),
+                                  Text(
+                                    'Follow : ',
+                                    // textAlign: TextAlign.start,
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                  Divider(
+                                    color: Colors.transparent,
+                                  ),
+                                  Text(
+                                      'Settings > Sound & Vibrate > Vibrate on touch'),
+                                ],
                               ),
-                              Expanded(
-                                child: Text(
-                                    'Settings > Sound & Vibrate > Vibrate on touch'),
-                              )
-                            ],
-                          ),
-                        ])),
+                            )),
                         actions: [
                           FlatButton(
                               onPressed: () {
