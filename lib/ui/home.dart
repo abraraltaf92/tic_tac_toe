@@ -71,6 +71,7 @@ class _HomeState extends State<Home> {
             _bulbIconButton(
                 themeProvider: themeProvider,
                 isDark: isDark,
+                isSound: isSound,
                 isHaptic: isHaptic),
           ],
         ),
@@ -160,11 +161,15 @@ class _HomeState extends State<Home> {
   IconButton _bulbIconButton(
       {@required bool isHaptic,
       @required ThemeProvider themeProvider,
-      @required bool isDark}) {
+      @required bool isDark,
+      @required bool isSound}) {
     return IconButton(
       onPressed: () {
         if (isHaptic) {
           HapticFeedback.mediumImpact();
+        }
+        if (isSound) {
+          player.play('whoosh.mp3');
         }
         themeProvider.swapTheme();
       },
@@ -518,7 +523,8 @@ class _HomeState extends State<Home> {
                 if (isHaptic) {
                   HapticFeedback.lightImpact();
                 }
-                _updateTileStateForIndex(tileIndex, isDark);
+                _updateTileStateForIndex(
+                    selectedIndex: tileIndex, isDark: isDark, isSound: isSound);
                 if (isSound && tileState == TileState.EMPTY) {
                   player.play('bubble_popping.mp3');
                 }
@@ -537,7 +543,10 @@ class _HomeState extends State<Home> {
   }
 
   // Game Logic
-  void _updateTileStateForIndex(int selectedIndex, bool isDark) {
+  void _updateTileStateForIndex(
+      {@required int selectedIndex,
+      @required bool isDark,
+      @required bool isSound}) {
     if (_boardState[selectedIndex] == TileState.EMPTY) {
       setState(() {
         _boardState[selectedIndex] = _currentState;
@@ -548,11 +557,11 @@ class _HomeState extends State<Home> {
 
       final winner = _findWinner();
       if (winner != null) {
-        _showWinnerDialog(winner, isDark);
+        _showWinnerDialog(tileState: winner, isDark: isDark, isSound: isSound);
       } else {
         countDraw += 1;
         if (countDraw == 9) {
-          _showDrawDialog(isDark: isDark);
+          _showDrawDialog(isDark: isDark, isSound: isSound);
         }
       }
     }
@@ -587,11 +596,18 @@ class _HomeState extends State<Home> {
     return winner;
   }
 
-  void _showWinnerDialog(TileState tileState, bool isDark) {
+  void _showWinnerDialog(
+      {@required TileState tileState,
+      @required bool isDark,
+      @required bool isSound}) {
     showDialog(
         context: context,
         builder: (_) {
           if (Platform.isIOS) {
+            if (isSound) {
+              player.play('win.mp3');
+            }
+
             return CupertinoAlertDialog(
               title: const Text("Winner"),
               content: Stack(
@@ -619,6 +635,9 @@ class _HomeState extends State<Home> {
               ],
             );
           } else {
+            if (isSound) {
+              player.play('win.mp3');
+            }
             return AlertDialog(
               title: const Text("Winner"),
               content: Stack(
@@ -649,11 +668,14 @@ class _HomeState extends State<Home> {
         });
   }
 
-  void _showDrawDialog({@required bool isDark}) {
+  void _showDrawDialog({@required bool isDark, @required bool isSound}) {
     showDialog(
         context: context,
         builder: (_) {
           if (Platform.isIOS) {
+            if (isSound) {
+              player.play('draw.mp3');
+            }
             return CupertinoAlertDialog(
               title: const Text("RESULT"),
               content: Image.asset(
@@ -674,6 +696,9 @@ class _HomeState extends State<Home> {
               ],
             );
           } else {
+            if (isSound) {
+              player.play('draw.mp3');
+            }
             return AlertDialog(
               title: const Text("RESULT"),
               content: Image.asset('assets/images/tie.png', color: Colors.red),
