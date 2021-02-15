@@ -13,6 +13,7 @@ import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
+import 'package:system_settings/system_settings.dart';
 import 'package:tic_tac_toe/notifiers/haptics.dart';
 import 'package:tic_tac_toe/notifiers/music.dart';
 import 'package:tic_tac_toe/tile_state/board_tile.dart';
@@ -407,6 +408,13 @@ class _HomeState extends State<Home> {
                         ])),
                         actions: [
                           FlatButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+
+                                SystemSettings.app();
+                              },
+                              child: const Text('Settings')),
+                          FlatButton(
                               onPressed: () async {
                                 Navigator.of(context).pop();
                                 await hapticProvider.swapPermission();
@@ -445,6 +453,12 @@ class _HomeState extends State<Home> {
                           ),
                         ])),
                         actions: [
+                          FlatButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                SystemSettings.app();
+                              },
+                              child: const Text('Settings')),
                           FlatButton(
                               onPressed: () async {
                                 Navigator.of(context).pop();
