@@ -10,7 +10,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 import 'package:lottie/lottie.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:system_settings/system_settings.dart';
@@ -33,6 +32,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   var _boardState = List<TileState>.filled(9, TileState.EMPTY);
   var _currentState = TileState.CROSS; //since Cross goes the first
+  String _currentTurn = 'X';
   int countDraw = 0;
   bool isPlay = true;
   bool changeButton = false;
@@ -121,7 +121,8 @@ class _HomeState extends State<Home> {
                         _soundEffects(
                             isDark: isDark,
                             soundProvider: soundProvider,
-                            isSound: isSound),
+                            isSound: isSound,
+                            isHaptic: isHaptic),
                         _hapticFeedback(
                             isDark: isDark,
                             hapticProvider: hapticProvider,
@@ -130,7 +131,8 @@ class _HomeState extends State<Home> {
                         _musicEffects(
                             isDark: isDark,
                             musicProvider: musicProvider,
-                            isMusic: isMusic),
+                            isMusic: isMusic,
+                            isHaptic: isHaptic),
                         _aboutMe(
                             isDark: isDark,
                             isSound: isSound,
@@ -141,17 +143,39 @@ class _HomeState extends State<Home> {
                 ],
               ))
             : SafeArea(
-                child: Center(
-                  child: Stack(
-                    children: <Widget>[
-                      Image.asset(
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.15,
+                      width: MediaQuery.of(context).size.width,
+                      alignment: Alignment.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            'Current Turn :  ',
+                          ),
+                          Image.asset(
+                            _currentTurn == 'X'
+                                ? 'assets/images/x.png'
+                                : 'assets/images/o.png',
+                            height: 50,
+                            width: 50,
+                          )
+                        ],
+                      ),
+                    ),
+                    Center(
+                      child: Image.asset(
                         'assets/images/board.png',
                         color: isDark ? Colors.white54 : Colors.black,
                       ),
-                      _boardTiles(
+                    ),
+                    Center(
+                      child: _boardTiles(
                           isSound: isSound, isDark: isDark, isHaptic: isHaptic),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
         floatingActionButton:
@@ -302,7 +326,12 @@ class _HomeState extends State<Home> {
           ? MediaQuery.of(context).size.width * 0.35 / 3
           : MediaQuery.of(context).size.width * 0.5,
       child: ElevatedButton(
-        child: changeButton ? Icon(FontAwesome.angellist) : Text('Let\'s play'),
+        child: changeButton
+            ? Icon(
+                FontAwesome.angellist,
+                color: isDark ? Colors.yellow : null,
+              )
+            : Text('Let\'s play'),
         style: ButtonStyle(
             backgroundColor: isDark
                 ? MaterialStateColor.resolveWith((states) => Colors.white54)
@@ -329,6 +358,7 @@ class _HomeState extends State<Home> {
   Container _soundEffects(
       {@required bool isDark,
       @required bool isSound,
+      @required bool isHaptic,
       @required SoundProvider soundProvider}) {
     return Container(
         width: MediaQuery.of(context).size.width * 0.5,
@@ -347,6 +377,9 @@ class _HomeState extends State<Home> {
                   ? MaterialStateColor.resolveWith((states) => Colors.black)
                   : null),
           onPressed: () async {
+            if (isHaptic) {
+              HapticFeedback.lightImpact();
+            }
             await soundProvider.swapSound();
           },
         ));
@@ -374,6 +407,9 @@ class _HomeState extends State<Home> {
                   ? MaterialStateColor.resolveWith((states) => Colors.black)
                   : null),
           onPressed: () async {
+            if (isHaptic) {
+              HapticFeedback.lightImpact();
+            }
             await hapticProvider.swapHaptic();
 
             if (isHapticPermission) {
@@ -409,15 +445,22 @@ class _HomeState extends State<Home> {
                         actions: [
                           FlatButton(
                               onPressed: () {
+                                if (isHaptic) {
+                                  HapticFeedback.lightImpact();
+                                }
                                 Navigator.of(context).pop();
 
                                 SystemSettings.app();
+                                hapticProvider.swapPermission();
                               },
                               child: const Text('Settings')),
                           FlatButton(
-                              onPressed: () async {
+                              onPressed: () {
+                                if (isHaptic) {
+                                  HapticFeedback.lightImpact();
+                                }
                                 Navigator.of(context).pop();
-                                await hapticProvider.swapPermission();
+                                hapticProvider.swapPermission();
                               },
                               child: const Text('OK'))
                         ],
@@ -434,7 +477,7 @@ class _HomeState extends State<Home> {
                         ),
                         content: Container(
                             child: Column(children: <Widget>[
-                          Text('Turn on System Haptics on your Iphone'),
+                          Text('Turn on Haptic Feedback on your device'),
                           Divider(
                             color: Colors.transparent,
                           ),
@@ -455,14 +498,21 @@ class _HomeState extends State<Home> {
                         actions: [
                           FlatButton(
                               onPressed: () {
+                                if (isHaptic) {
+                                  HapticFeedback.lightImpact();
+                                }
                                 Navigator.of(context).pop();
                                 SystemSettings.app();
+                                hapticProvider.swapPermission();
                               },
                               child: const Text('Settings')),
                           FlatButton(
-                              onPressed: () async {
+                              onPressed: () {
+                                if (isHaptic) {
+                                  HapticFeedback.lightImpact();
+                                }
                                 Navigator.of(context).pop();
-                                await hapticProvider.swapPermission();
+                                hapticProvider.swapPermission();
                               },
                               child: const Text('OK'))
                         ],
@@ -477,6 +527,7 @@ class _HomeState extends State<Home> {
   Container _musicEffects(
       {@required bool isDark,
       @required bool isMusic,
+      @required bool isHaptic,
       @required MusicProvider musicProvider}) {
     return Container(
         width: MediaQuery.of(context).size.width * 0.5,
@@ -500,7 +551,9 @@ class _HomeState extends State<Home> {
                   : null),
           onPressed: () async {
             // Get.to(Test());
-
+            if (isHaptic) {
+              HapticFeedback.lightImpact();
+            }
             if (!isMusic) {
               musicProvider.playFile();
             } else {
@@ -554,44 +607,48 @@ class _HomeState extends State<Home> {
       curve: Curves.bounceIn,
       children: [
         // FAB 1
-        SpeedDialChild(
-            child: const Icon(Icons.replay_outlined),
-            backgroundColor: Colors.white54,
-            onTap: () {
-              if (isHaptic) {
-                HapticFeedback.lightImpact();
-              }
-              _resetGame();
-              _displaySnack(msg: 'Game Restarted', isDark: isDark);
-            },
-            label: 'Restart',
-            labelStyle: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16.0,
-                color: Colors.black),
-            labelBackgroundColor: Colors.white54),
-
-        SpeedDialChild(
-            child: const Icon(Icons.close),
-            backgroundColor: Colors.white54,
-            onTap: () {
-              if (isHaptic) {
-                HapticFeedback.lightImpact();
-              }
-              _resetGame();
-              setState(() {
-                isPlay = !isPlay;
-                changeButton = !changeButton;
-              });
-            },
-            label: 'Quit',
-            labelStyle: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-                fontSize: 16.0),
-            labelBackgroundColor: Colors.white54)
+        restartSpeedDialChild(isHaptic: isHaptic, isDark: isDark),
+        quitSpeedDialChild(isHaptic: isHaptic)
       ],
     );
+  }
+
+  SpeedDialChild restartSpeedDialChild(
+      {@required bool isHaptic, @required bool isDark}) {
+    return SpeedDialChild(
+        child: const Icon(Icons.replay_outlined),
+        backgroundColor: Colors.white54,
+        onTap: () {
+          if (isHaptic) {
+            HapticFeedback.lightImpact();
+          }
+          _resetGame();
+          _displaySnack(msg: 'Game Restarted', isDark: isDark);
+        },
+        label: 'Restart',
+        labelStyle: TextStyle(
+            fontWeight: FontWeight.w500, fontSize: 16.0, color: Colors.black),
+        labelBackgroundColor: Colors.white54);
+  }
+
+  SpeedDialChild quitSpeedDialChild({@required bool isHaptic}) {
+    return SpeedDialChild(
+        child: const Icon(Icons.close),
+        backgroundColor: Colors.white54,
+        onTap: () {
+          if (isHaptic) {
+            HapticFeedback.lightImpact();
+          }
+          _resetGame();
+          setState(() {
+            isPlay = !isPlay;
+            changeButton = !changeButton;
+          });
+        },
+        label: 'Quit',
+        labelStyle: TextStyle(
+            fontWeight: FontWeight.w500, color: Colors.black, fontSize: 16.0),
+        labelBackgroundColor: Colors.white54);
   }
 
   Widget _boardTiles(
@@ -623,7 +680,10 @@ class _HomeState extends State<Home> {
                   HapticFeedback.lightImpact();
                 }
                 _updateTileStateForIndex(
-                    selectedIndex: tileIndex, isDark: isDark, isSound: isSound);
+                    selectedIndex: tileIndex,
+                    isDark: isDark,
+                    isSound: isSound,
+                    isHaptic: isHaptic);
                 if (isSound && tileState == TileState.EMPTY) {
                   player.play('bubble_popping.mp3');
                 }
@@ -645,22 +705,28 @@ class _HomeState extends State<Home> {
   void _updateTileStateForIndex(
       {@required int selectedIndex,
       @required bool isDark,
-      @required bool isSound}) {
+      @required bool isSound,
+      @required bool isHaptic}) {
     if (_boardState[selectedIndex] == TileState.EMPTY) {
       setState(() {
         _boardState[selectedIndex] = _currentState;
         _currentState = _currentState == TileState.CROSS
             ? TileState.CIRCLE
             : TileState.CROSS;
+        _currentTurn = _currentState == TileState.CROSS ? 'X' : 'O';
       });
 
       final winner = _findWinner();
       if (winner != null) {
-        _showWinnerDialog(tileState: winner, isDark: isDark, isSound: isSound);
+        _showWinnerDialog(
+            tileState: winner,
+            isDark: isDark,
+            isSound: isSound,
+            isHaptic: isHaptic);
       } else {
         countDraw += 1;
         if (countDraw == 9) {
-          _showDrawDialog(isDark: isDark, isSound: isSound);
+          _showDrawDialog(isDark: isDark, isSound: isSound, isHaptic: isHaptic);
         }
       }
     }
@@ -698,15 +764,15 @@ class _HomeState extends State<Home> {
   void _showWinnerDialog(
       {@required TileState tileState,
       @required bool isDark,
-      @required bool isSound}) {
-    showDialog(
-        context: context,
-        builder: (_) {
-          if (Platform.isIOS) {
-            if (isSound) {
-              player.play('win.mp3');
-            }
-
+      @required bool isSound,
+      @required bool isHaptic}) {
+    if (isSound) {
+      player.play('win.mp3');
+    }
+    if (Platform.isIOS) {
+      showCupertinoDialog(
+          context: context,
+          builder: (_) {
             return CupertinoAlertDialog(
               title: const Text("Winner"),
               content: Stack(
@@ -723,6 +789,9 @@ class _HomeState extends State<Home> {
               actions: [
                 FlatButton(
                     onPressed: () {
+                      if (isHaptic) {
+                        HapticFeedback.lightImpact();
+                      }
                       _resetGame();
                       Navigator.of(context).pop();
                       _displaySnack(
@@ -730,13 +799,27 @@ class _HomeState extends State<Home> {
                           gravity: ToastGravity.CENTER,
                           isDark: isDark);
                     },
-                    child: const Text('New Game'))
+                    child: const Text('New Game')),
+                FlatButton(
+                    onPressed: () {
+                      if (isHaptic) {
+                        HapticFeedback.lightImpact();
+                      }
+                      Navigator.of(context).pop();
+                      _resetGame();
+                      setState(() {
+                        isPlay = !isPlay;
+                        changeButton = !changeButton;
+                      });
+                    },
+                    child: const Text('Quit')),
               ],
             );
-          } else {
-            if (isSound) {
-              player.play('win.mp3');
-            }
+          });
+    } else {
+      showDialog(
+          context: context,
+          builder: (_) {
             return AlertDialog(
               title: const Text("Winner"),
               content: Stack(
@@ -753,6 +836,9 @@ class _HomeState extends State<Home> {
               actions: [
                 FlatButton(
                     onPressed: () {
+                      if (isHaptic) {
+                        HapticFeedback.lightImpact();
+                      }
                       _resetGame();
                       Navigator.of(context).pop();
                       _displaySnack(
@@ -760,21 +846,38 @@ class _HomeState extends State<Home> {
                           gravity: ToastGravity.CENTER,
                           isDark: isDark);
                     },
-                    child: const Text('New Game'))
+                    child: const Text('New Game')),
+                FlatButton(
+                    onPressed: () {
+                      if (isHaptic) {
+                        HapticFeedback.lightImpact();
+                      }
+                      Navigator.of(context).pop();
+                      _resetGame();
+                      setState(() {
+                        isPlay = !isPlay;
+                        changeButton = !changeButton;
+                      });
+                    },
+                    child: const Text('Quit'))
               ],
             );
-          }
-        });
+          });
+    }
   }
 
-  void _showDrawDialog({@required bool isDark, @required bool isSound}) {
-    showDialog(
-        context: context,
-        builder: (_) {
-          if (Platform.isIOS) {
-            if (isSound) {
-              player.play('draw.mp3');
-            }
+  void _showDrawDialog(
+      {@required bool isDark,
+      @required bool isSound,
+      @required bool isHaptic}) {
+    if (isSound) {
+      player.play('draw.mp3');
+    }
+
+    if (Platform.isIOS) {
+      showCupertinoDialog(
+          context: context,
+          builder: (_) {
             return CupertinoAlertDialog(
               title: const Text("RESULT"),
               content: Image.asset(
@@ -784,6 +887,9 @@ class _HomeState extends State<Home> {
               actions: [
                 FlatButton(
                     onPressed: () {
+                      if (isHaptic) {
+                        HapticFeedback.lightImpact();
+                      }
                       _resetGame();
                       Navigator.of(context).pop();
                       _displaySnack(
@@ -791,19 +897,36 @@ class _HomeState extends State<Home> {
                           gravity: ToastGravity.CENTER,
                           isDark: isDark);
                     },
-                    child: const Text('New Game'))
+                    child: const Text('New Game')),
+                FlatButton(
+                    onPressed: () {
+                      if (isHaptic) {
+                        HapticFeedback.lightImpact();
+                      }
+                      Navigator.of(context).pop();
+                      _resetGame();
+                      setState(() {
+                        isPlay = !isPlay;
+                        changeButton = !changeButton;
+                      });
+                    },
+                    child: const Text('Quit'))
               ],
             );
-          } else {
-            if (isSound) {
-              player.play('draw.mp3');
-            }
+          });
+    } else {
+      showDialog(
+          context: context,
+          builder: (_) {
             return AlertDialog(
               title: const Text("RESULT"),
               content: Image.asset('assets/images/tie.png', color: Colors.red),
               actions: [
                 FlatButton(
                     onPressed: () {
+                      if (isHaptic) {
+                        HapticFeedback.lightImpact();
+                      }
                       _resetGame();
                       Navigator.of(context).pop();
                       _displaySnack(
@@ -811,17 +934,31 @@ class _HomeState extends State<Home> {
                           gravity: ToastGravity.CENTER,
                           isDark: isDark);
                     },
-                    child: const Text('New Game'))
+                    child: const Text('New Game')),
+                FlatButton(
+                    onPressed: () {
+                      if (isHaptic) {
+                        HapticFeedback.lightImpact();
+                      }
+                      Navigator.of(context).pop();
+                      _resetGame();
+                      setState(() {
+                        isPlay = !isPlay;
+                        changeButton = !changeButton;
+                      });
+                    },
+                    child: const Text('Quit'))
               ],
             );
-          }
-        });
+          });
+    }
   }
 
   void _resetGame() {
     setState(() {
       _boardState = List.filled(9, TileState.EMPTY);
       _currentState = TileState.CROSS;
+      _currentTurn = 'X';
       countDraw = 0;
     });
   }

@@ -61,7 +61,8 @@ showLicense({BuildContext context}) {
           child: Opacity(
             opacity: 0.8,
             child: Text(
-              'Sound from https://www.zapsplat.com',
+              'Sound obtained from https://www.zapsplat.com',
+              textAlign: TextAlign.start,
               style: TextStyle(
                 fontSize: 10,
                 decoration: TextDecoration.underline,
