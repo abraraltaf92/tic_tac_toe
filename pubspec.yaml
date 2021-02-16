@@ -25,11 +25,9 @@ dependencies:
     sdk: flutter
   animated_splash_screen: ^1.0.1+2
   animated_text_kit: ^3.1.0
-  # assets_audio_player: ^2.0.13+8
-  audio_session: ^0.0.11
+  flame: ^0.29.2
   system_settings: ^1.0.1
   audioplayers: ^0.17.3
-  just_audio: ^0.5.5
   auto_size_text: ^2.1.0
   cupertino_icons: ^1.0.1
   flutter_icons: ^1.1.0
@@ -68,7 +66,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
-    - assets/sounds/
+    - assets/audio/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
   # For details regarding adding assets from package dependencies, see

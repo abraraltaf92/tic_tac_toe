@@ -1,6 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 
-import 'package:audioplayers/audio_cache.dart';
+import 'package:flame/flame_audio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,19 +37,8 @@ class _HomeState extends State<Home> {
   int countDraw = 0;
   bool isPlay = true;
   bool changeButton = false;
-  static AudioCache player =
-      AudioCache(prefix: 'assets/sounds/', respectSilence: false);
-  @override
-  void initState() {
-    player.loadAll(['bubble_popping.mp3', 'win.mp3', 'draw.mp3', 'whoosh.mp3']);
-    super.initState();
-  }
 
-  @override
-  void dispose() {
-    player.clearCache();
-    super.dispose();
-  }
+  FlameAudio audio = FlameAudio();
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +186,7 @@ class _HomeState extends State<Home> {
           HapticFeedback.mediumImpact();
         }
         if (isSound) {
-          player.play('whoosh.mp3');
+          audio.play('whoosh.mp3');
         }
         themeProvider.swapTheme();
       },
@@ -545,10 +535,6 @@ class _HomeState extends State<Home> {
                   textAlign: TextAlign.center,
                 )
               : Text('Music: on', textAlign: TextAlign.center),
-          // child: Text(
-          //   'Music: on',
-          //   textAlign: TextAlign.center,
-          // ),
           style: ButtonStyle(
               backgroundColor: isDark
                   ? MaterialStateColor.resolveWith((states) => Colors.white54)
@@ -567,11 +553,6 @@ class _HomeState extends State<Home> {
               musicProvider.stopFile();
             }
             await musicProvider.swapMusic();
-
-            // _displaySnack(
-            //     msg: 'Work in progress...',
-            //     isDark: isDark,
-            //     gravity: ToastGravity.CENTER);
           },
         ));
   }
@@ -692,7 +673,7 @@ class _HomeState extends State<Home> {
                     isSound: isSound,
                     isHaptic: isHaptic);
                 if (isSound && tileState == TileState.EMPTY) {
-                  player.play('bubble_popping.mp3');
+                  audio.play('bubble_popping.mp3');
                 }
                 if (tileState != TileState.EMPTY) {
                   _displaySnack(
@@ -774,7 +755,7 @@ class _HomeState extends State<Home> {
       @required bool isSound,
       @required bool isHaptic}) {
     if (isSound) {
-      player.play('win.mp3');
+      audio.play('win.mp3');
     }
     if (Platform.isIOS) {
       showCupertinoDialog(
@@ -878,7 +859,7 @@ class _HomeState extends State<Home> {
       @required bool isSound,
       @required bool isHaptic}) {
     if (isSound) {
-      player.play('draw.mp3');
+      audio.play('draw.mp3');
     }
 
     if (Platform.isIOS) {

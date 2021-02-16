@@ -1,19 +1,18 @@
-import 'package:audio_session/audio_session.dart';
+import 'dart:async';
+
+import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MusicProvider extends ChangeNotifier {
   bool _selectedMusic;
-  AudioPlayer player = AudioPlayer();
 
   MusicProvider({@required bool isMusic}) {
     _selectedMusic = isMusic;
     print(isMusic);
-
     SharedPreferences.getInstance().then((prefs) {
       bool isMusic = prefs.getBool('isMusic') ?? false;
-      print(isMusic);
+      Flame.audio.disableLog();
       if (isMusic) {
         playFile();
       }
@@ -34,62 +33,32 @@ class MusicProvider extends ChangeNotifier {
 
   bool get getMusic => _selectedMusic ?? false;
 
-  void playFile() async {
-    if (!player.playing) {
-      await player.setAsset('assets/sounds/house_party.mp3');
-      player.setSpeed(1.5);
-      player.setLoopMode(LoopMode.all);
-      player.play();
-      handleInterruptions();
+  // void playFile() async {
+  //   if (!player.playing) {
+  //     await player.setAsset('assets/sounds/house_party.mp3');
+
+  //     player.setSpeed(1.5);
+  //     player.setLoopMode(LoopMode.one);
+  //     player.play();
+
+  //   } else {
+  //     stopFile();
+  //   }
+  // }
+
+  // void stopFile() {
+  //   player.stop();
+  // }
+  void playFile() {
+    if (!Flame.bgm.isPlaying) {
+      Flame.bgm.play('house_party.mp3', volume: .8);
     } else {
-      player.stop();
+      stopFile();
     }
   }
 
   void stopFile() {
-    player.stop();
-  }
-
-  Future<void> pause() async {
-    player.pause();
-  }
-
-  void handleInterruptions() {
-    AudioSession.instance.then((session) async {
-      player.playbackEventStream.listen((event) {
-        // Activate session only if a song is playing
-        if (player.playing) {
-          session.setActive(true);
-        }
-      }).onError((e) => print(e));
-      session.interruptionEventStream.listen((event) {
-        if (event.begin) {
-          // Another app started playing audio and we should pause.
-          switch (event.type) {
-            case AudioInterruptionType.duck:
-              pause();
-              break;
-
-            case AudioInterruptionType.pause:
-            // online media like youtube false under unknown
-            case AudioInterruptionType.unknown:
-              pause();
-              // refresh notification
-
-              break;
-            default:
-          }
-        } else {
-          // else block runs at the end of an interruption
-          switch (event.type) {
-            default:
-          }
-        }
-      });
-      session.becomingNoisyEventStream.listen((_) {
-        // earphones unpluged
-        pause();
-      });
-    });
+    Flame.audio.disableLog();
+    Flame.bgm.stop();
   }
 }
