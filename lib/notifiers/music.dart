@@ -10,7 +10,7 @@ class MusicProvider extends ChangeNotifier {
   MusicProvider({@required bool isMusic}) {
     _selectedMusic = isMusic;
     SharedPreferences.getInstance().then((prefs) {
-      bool isMusic = prefs.getBool('isMusic') ?? false;
+      bool isMusic = prefs.getBool('isMusic') ?? true;
 
       if (isMusic) {
         playFile();
@@ -29,7 +29,7 @@ class MusicProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool get getMusic => _selectedMusic ?? false;
+  bool get getMusic => _selectedMusic ?? true;
 
   void playFile() {
     if (!Flame.bgm.isPlaying) {

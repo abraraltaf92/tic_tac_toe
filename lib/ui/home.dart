@@ -365,11 +365,23 @@ class _HomeState extends State<Home> {
         width: MediaQuery.of(context).size.width * 0.5,
         child: ElevatedButton(
           child: (isSound)
-              ? Text(
-                  'Sound Effects: off',
-                  textAlign: TextAlign.center,
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Sound Effects:  ',
+                      textAlign: TextAlign.center,
+                    ),
+                    Icon(FontAwesome.volume_up)
+                  ],
                 )
-              : Text('Sound Effects: on', textAlign: TextAlign.center),
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Sound Effects:  ', textAlign: TextAlign.center),
+                    Icon(FontAwesome.volume_off)
+                  ],
+                ),
           style: ButtonStyle(
               backgroundColor: isDark
                   ? MaterialStateColor.resolveWith((states) => Colors.white54)
@@ -395,11 +407,29 @@ class _HomeState extends State<Home> {
         width: MediaQuery.of(context).size.width * 0.5,
         child: ElevatedButton(
           child: (isHaptic)
-              ? Text(
-                  'Haptics: off',
-                  textAlign: TextAlign.center,
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Haptics:  ',
+                      textAlign: TextAlign.center,
+                    ),
+                    Icon(Icons.vibration_rounded),
+                  ],
                 )
-              : Text('Haptics: on', textAlign: TextAlign.center),
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Haptics:  ', textAlign: TextAlign.center),
+                    Stack(
+                      fit: StackFit.loose,
+                      children: [
+                        Icon(FontAwesome5Solid.slash),
+                        Icon(Icons.vibration_rounded),
+                      ],
+                    )
+                  ],
+                ),
           style: ButtonStyle(
               backgroundColor: isDark
                   ? MaterialStateColor.resolveWith((states) => Colors.white54)
@@ -541,15 +571,23 @@ class _HomeState extends State<Home> {
         width: MediaQuery.of(context).size.width * 0.5,
         child: ElevatedButton(
           child: (isMusic)
-              ? Text(
-                  'Music: off',
-                  textAlign: TextAlign.center,
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Music:  ',
+                      textAlign: TextAlign.center,
+                    ),
+                    Icon(Icons.music_note_rounded)
+                  ],
                 )
-              : Text('Music: on', textAlign: TextAlign.center),
-          // child: Text(
-          //   'Music: on',
-          //   textAlign: TextAlign.center,
-          // ),
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Music: ', textAlign: TextAlign.center),
+                    Icon(Icons.music_off_rounded)
+                  ],
+                ),
           style: ButtonStyle(
               backgroundColor: isDark
                   ? MaterialStateColor.resolveWith((states) => Colors.white54)
@@ -568,11 +606,6 @@ class _HomeState extends State<Home> {
               musicProvider.stopFile();
             }
             await musicProvider.swapMusic();
-
-            // _displaySnack(
-            //     msg: 'Work in progress...',
-            //     isDark: isDark,
-            //     gravity: ToastGravity.CENTER);
           },
         ));
   }
