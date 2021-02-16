@@ -9,10 +9,9 @@ class MusicProvider extends ChangeNotifier {
 
   MusicProvider({@required bool isMusic}) {
     _selectedMusic = isMusic;
-    print(isMusic);
     SharedPreferences.getInstance().then((prefs) {
       bool isMusic = prefs.getBool('isMusic') ?? false;
-      Flame.audio.disableLog();
+
       if (isMusic) {
         playFile();
       }
@@ -27,28 +26,11 @@ class MusicProvider extends ChangeNotifier {
       _selectedMusic = true;
       prefs.setBool('isMusic', true);
     }
-    // prefs.setBool('isMusic', player.playerState.playing);
     notifyListeners();
   }
 
   bool get getMusic => _selectedMusic ?? false;
 
-  // void playFile() async {
-  //   if (!player.playing) {
-  //     await player.setAsset('assets/sounds/house_party.mp3');
-
-  //     player.setSpeed(1.5);
-  //     player.setLoopMode(LoopMode.one);
-  //     player.play();
-
-  //   } else {
-  //     stopFile();
-  //   }
-  // }
-
-  // void stopFile() {
-  //   player.stop();
-  // }
   void playFile() {
     if (!Flame.bgm.isPlaying) {
       Flame.bgm.play('house_party.mp3', volume: .8);
@@ -58,7 +40,6 @@ class MusicProvider extends ChangeNotifier {
   }
 
   void stopFile() {
-    Flame.audio.disableLog();
     Flame.bgm.stop();
   }
 }

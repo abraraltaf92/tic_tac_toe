@@ -75,12 +75,9 @@ class MyPortfolio extends StatelessWidget {
                                             HapticFeedback.lightImpact();
                                           }
                                           Navigator.of(context).pop();
-                                          try {
-                                            LaunchReview.launch(
-                                                writeReview: false);
-                                          } catch (e) {
-                                            print(e.toString());
-                                          }
+
+                                          LaunchReview.launch(
+                                              writeReview: false);
                                         },
                                         child: const Text('OK'))
                                   ],

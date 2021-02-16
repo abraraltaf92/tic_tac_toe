@@ -1,4 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:audioplayers/audio_cache.dart';
+
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flame/flame.dart';
@@ -19,7 +21,6 @@ import 'package:tic_tac_toe/notifiers/theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Flame.bgm.initialize();
-  Flame.audio.disableLog();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
@@ -54,17 +55,12 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   AnimationController _controller;
   Animation<Offset> _offsetAnimation;
   Animation<double> _fadeAnimation;
+  static AudioCache player =
+      AudioCache(prefix: 'assets/audio/', respectSilence: true);
 
   @override
   void initState() {
-    Flame.audio.loadAll([
-      'bubble_popping.mp3',
-      'draw.mp3',
-      'house_party.mp3',
-      'whoosh.mp3',
-      'win.mp3'
-    ]);
-
+    Flame.audio.load('house_party.mp3');
     _controller = AnimationController(
       duration: const Duration(milliseconds: 1700),
       vsync: this,
@@ -90,8 +86,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   void dispose() {
     _controller.dispose();
     super.dispose();
+    player.clearCache();
     Flame.audio.clearAll();
-    Flame.bgm.dispose();
   }
 
   @override

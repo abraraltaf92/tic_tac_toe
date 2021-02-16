@@ -51,7 +51,7 @@ packages:
     source: hosted
     version: "2.5.0-nullsafety.3"
   audioplayers:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: audioplayers
       url: "https://pub.dartlang.org"
