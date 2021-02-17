@@ -59,10 +59,10 @@ class MyPortfolio extends StatelessWidget {
                         if (isSound) {
                           HapticFeedback.lightImpact();
                         }
-                        showDialog(
-                            context: context,
-                            builder: (_) {
-                              if (Platform.isIOS) {
+                        if (Platform.isIOS) {
+                          showCupertinoDialog(
+                              context: context,
+                              builder: (_) {
                                 return CupertinoAlertDialog(
                                   title: const Text("Rate this app"),
                                   content: const Text(
@@ -82,7 +82,11 @@ class MyPortfolio extends StatelessWidget {
                                         child: const Text('OK'))
                                   ],
                                 );
-                              } else {
+                              });
+                        } else {
+                          showDialog(
+                              context: context,
+                              builder: (_) {
                                 return AlertDialog(
                                   title: const Text("Rate this app"),
                                   content: const Text(appRating),
@@ -98,8 +102,8 @@ class MyPortfolio extends StatelessWidget {
                                         child: const Text('OK'))
                                   ],
                                 );
-                              }
-                            });
+                              });
+                        }
                       },
                       child: AutoSizeText('Rate this app',
                           style: TextStyle(
