@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart';
 
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
@@ -481,7 +480,7 @@ class _HomeState extends State<Home> {
                                 }
                                 Navigator.of(context).pop();
 
-                                SystemSettings.app();
+                                SystemSettings.system();
                                 hapticProvider.swapPermission();
                               },
                               child: const Text('Settings')),
@@ -522,14 +521,13 @@ class _HomeState extends State<Home> {
                                   ),
                                   Text(
                                     'Follow : ',
-                                    // textAlign: TextAlign.start,
                                     style: TextStyle(color: Colors.red),
                                   ),
                                   Divider(
                                     color: Colors.transparent,
                                   ),
                                   Text(
-                                      'Settings > Sound & Vibrate > Vibrate on touch'),
+                                      'Settings > Sound & Vibrate > Advanced Settings > Vibrate on touch'),
                                 ],
                               ),
                             )),
@@ -540,7 +538,7 @@ class _HomeState extends State<Home> {
                                   HapticFeedback.lightImpact();
                                 }
                                 Navigator.of(context).pop();
-                                SystemSettings.app();
+                                SystemSettings.system();
                                 hapticProvider.swapPermission();
                               },
                               child: const Text('Settings')),
@@ -596,7 +594,6 @@ class _HomeState extends State<Home> {
                   ? MaterialStateColor.resolveWith((states) => Colors.black)
                   : null),
           onPressed: () async {
-            // Get.to(Test());
             if (isHaptic) {
               HapticFeedback.lightImpact();
             }
@@ -629,10 +626,9 @@ class _HomeState extends State<Home> {
           if (isHaptic) {
             HapticFeedback.lightImpact();
           }
-          Get.to(MyPortfolio(
-            isDark: isDark,
-            isSound: isSound,
-          ));
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return MyPortfolio(isDark: isDark, isSound: isSound);
+          }));
         },
       ),
     );
@@ -647,7 +643,6 @@ class _HomeState extends State<Home> {
       visible: true,
       curve: Curves.bounceIn,
       children: [
-        // FAB 1
         restartSpeedDialChild(isHaptic: isHaptic, isDark: isDark),
         quitSpeedDialChild(isHaptic: isHaptic)
       ],
@@ -1013,5 +1008,3 @@ class _HomeState extends State<Home> {
     );
   }
 }
-
-//

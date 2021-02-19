@@ -32,7 +32,6 @@ dependencies:
   flutter_launcher_icons: ^0.8.1
   flutter_speed_dial: ^2.1.1
   fluttertoast: ^7.1.6
-  get: ^3.24.0
   launch_review: ^2.0.0
   lottie: ^0.7.0+1
   provider: ^4.3.3

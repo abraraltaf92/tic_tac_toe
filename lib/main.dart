@@ -7,7 +7,6 @@ import 'package:flame/flame.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,28 +20,31 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Flame.bgm.initialize();
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider(
-        create: (_) =>
-            ThemeProvider(isDarkMode: prefs.getBool('isDarkTheme') ?? true),
-      ),
-      ChangeNotifierProvider(
-          create: (_) =>
-              SoundProvider(isSound: prefs.getBool('isSound') ?? true)),
-      ChangeNotifierProvider(
-          create: (_) => HapticProvider(
-              isHaptic: prefs.getBool('isHaptic') ?? false,
-              isHapticPemission: prefs.getBool('isHapticPermission') ?? true)),
-      ChangeNotifierProvider(
-          create: (_) => MusicProvider(
-                isMusic: prefs.getBool('isMusic') ?? true,
-              )),
-    ],
-    child: MyApp(),
-  ));
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((value) => runApp(MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) =>
+                ThemeProvider(isDarkMode: prefs.getBool('isDarkTheme') ?? true),
+          ),
+          ChangeNotifierProvider(
+              create: (_) =>
+                  SoundProvider(isSound: prefs.getBool('isSound') ?? true)),
+          ChangeNotifierProvider(
+              create: (_) => HapticProvider(
+                  isHaptic: prefs.getBool('isHaptic') ?? false,
+                  isHapticPemission:
+                      prefs.getBool('isHapticPermission') ?? true)),
+          ChangeNotifierProvider(
+              create: (_) => MusicProvider(
+                    isMusic: prefs.getBool('isMusic') ?? true,
+                  )),
+        ],
+        child: MyApp(),
+      )));
 }
 
 class MyApp extends StatefulWidget {
@@ -54,8 +56,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   AnimationController _controller;
   Animation<Offset> _offsetAnimation;
   Animation<double> _fadeAnimation;
-  static AudioCache player =
-      AudioCache(prefix: 'assets/audio/', respectSilence: true);
+  static AudioCache player = AudioCache(prefix: 'assets/audio/');
 
   @override
   void initState() {
@@ -92,7 +93,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
-      return GetMaterialApp(
+      return MaterialApp(
         title: 'Tic Tac Toe',
         theme: themeProvider.getTheme,
         debugShowCheckedModeBanner: false,

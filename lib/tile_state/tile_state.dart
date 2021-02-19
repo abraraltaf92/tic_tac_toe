@@ -2,8 +2,6 @@ import 'dart:math';
 
 enum TileState { EMPTY, CROSS, CIRCLE }
 
-// building list of list --> [1,2,3,4,5,6,7,8,9] => [ [1,2,3] [4,5,6] [7,8,9] ]
-
 // size always gonna be 3 here just for generality
 List<List<TileState>> chunk(List<TileState> list, int size) {
   return List.generate(
