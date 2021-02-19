@@ -641,6 +641,7 @@ class _HomeState extends State<Home> {
   Widget _speedDial({@required bool isDark, @required bool isHaptic}) {
     return SpeedDial(
       animatedIcon: AnimatedIcons.view_list,
+      animationSpeed: 100,
       animatedIconTheme: IconThemeData(size: 25),
       backgroundColor: Colors.white70,
       foregroundColor: Colors.black,
