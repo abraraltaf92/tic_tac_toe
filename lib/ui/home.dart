@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audioplayers/audio_cache.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:flame/flame_audio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -90,13 +92,44 @@ class _HomeState extends State<Home> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                 children: [
+                  SvgPicture.asset(
+                    'assets/images/izan.svg',
+                    height: 150,
+                  ),
+                  const Text(
+                    'Abrar Altaf Lone',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 25,
+                      // color: Colors.,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  const Text(
+                    'Developer',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Source Sans Pro',
+                      fontSize: 10,
+                      color: Colors.white,
+                      letterSpacing: 2.5,
+                    ),
+                  ),
+                  SizedBox(
+                    child: Divider(),
+                  ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
+                    padding: const EdgeInsets.only(
+                      left: 8.0,
+                      top: 18,
+                    ),
                     child: const Text(
                       'Follow us on:',
                     ),
                   ),
                   _instagramTile(isHaptic: isHaptic),
+                  _linkedInTile(isHaptic: isHaptic),
                   _facebookTile(isHaptic: isHaptic),
                   Divider(),
                   _myPortfolioTile(isHaptic: isHaptic),
@@ -234,6 +267,29 @@ class _HomeState extends State<Home> {
     );
   }
 
+  ListTile _linkedInTile({@required bool isHaptic}) {
+    return ListTile(
+      onTap: () async {
+        if (isHaptic) {
+          HapticFeedback.lightImpact();
+        }
+        const url = linkedInLink;
+        if (await canLaunch(url)) {
+          await launch(url);
+        } else {
+          throw 'Could not launch $url';
+        }
+      },
+      leading: const Icon(FontAwesome.linkedin),
+      title: const Text(
+        "LinkedIn",
+        style: TextStyle(
+          fontSize: 15,
+        ),
+      ),
+    );
+  }
+
   ListTile _facebookTile({@required bool isHaptic}) {
     return ListTile(
       onTap: () async {
@@ -289,7 +345,7 @@ class _HomeState extends State<Home> {
         if (Platform.isAndroid) {
           Share.share(googlePlayStoreLink, subject: 'Share Tic Tac Toe');
         } else {
-          Share.share('itms-apps//');
+          Share.share(appStoreLink);
         }
       },
       leading: const Icon(FontAwesome.share),
@@ -640,6 +696,9 @@ class _HomeState extends State<Home> {
 
   Widget _speedDial({@required bool isDark, @required bool isHaptic}) {
     return SpeedDial(
+      overlayColor: Colors.transparent,
+      marginBottom: 0,
+      overlayOpacity: 0,
       animatedIcon: AnimatedIcons.view_list,
       animationSpeed: 100,
       animatedIconTheme: IconThemeData(size: 25),
@@ -697,7 +756,9 @@ class _HomeState extends State<Home> {
       @required bool isDark,
       @required bool isHaptic}) {
     return Builder(builder: (context) {
-      final boardWidth = MediaQuery.of(context).size.width;
+      final boardWidth = MediaQuery.of(context).size.width < 800
+          ? MediaQuery.of(context).size.width
+          : 600.0;
       final tileWidth = boardWidth / 3;
       return Container(
         height: boardWidth,

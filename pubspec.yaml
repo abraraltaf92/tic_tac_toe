@@ -25,12 +25,12 @@ dependencies:
     sdk: flutter
   animated_splash_screen: ^1.0.1+2
   animated_text_kit: ^3.1.0
-
   auto_size_text: ^2.1.0
   cupertino_icons: ^1.0.1
+  flame: ^0.29.2
   flutter_icons: ^1.1.0
-  flutter_launcher_icons: ^0.8.1
   flutter_speed_dial: ^2.1.1
+  flutter_svg:
   fluttertoast: ^7.1.6
   launch_review: ^2.0.0
   lottie: ^0.7.0+1
@@ -39,11 +39,7 @@ dependencies:
   shared_preferences: ^0.5.12+4
   system_settings: ^1.0.1
   url_launcher: ^5.7.10
-  flame: ^0.29.2
-flutter_icons:
-  android: false
-  ios: true
-  image_path: "images/logo.png"
+
 
 dev_dependencies:
   flutter_test:

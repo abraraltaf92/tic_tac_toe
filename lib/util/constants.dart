@@ -1,8 +1,11 @@
 const String instaLink = 'https://www.instagram.com/abraraltaf92';
+const String linkedInLink = 'https://www.linkedin.com/in/abraraltaf92/';
 const String fbLink = 'https://www.facebook.com/abrar.altaf1/';
 const String myPortfolio = 'https://abrar-altaf92.web.app';
 const String googlePlayStoreLink =
     'https://play.google.com/store/apps/details?id=com.abraraltaf.tic_tac_toe';
+const String appStoreLink =
+    'https://apps.apple.com/us/app/abrars-tic-tac-toe/id1563476661';
 const String buyMeACoffee = 'https://www.buymeacoffee.com/abraraltaf92';
 const String licenseContent =
     'Tic-tac-toe, is a simple mobile game for two players, X and O, who take turns marking the spaces in a 3×3 grid. The player who succeeds in placing three of their marks in a diagonal, horizontal, or vertical row is the winner.';

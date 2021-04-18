@@ -77,7 +77,8 @@ class MyPortfolio extends StatelessWidget {
                                           Navigator.of(context).pop();
 
                                           LaunchReview.launch(
-                                              writeReview: false);
+                                              writeReview: true,
+                                              iOSAppId: '1563476661');
                                         },
                                         child: const Text('OK'))
                                   ],
